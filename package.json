@@ -1,0 +1,30 @@
+{
+  "name": "bcc3004-ic3a_sphere_server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucasGrander/BCC3004-IC3A_SPHERE_SERVER.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LucasGrander/BCC3004-IC3A_SPHERE_SERVER/issues"
+  },
+  "homepage": "https://github.com/LucasGrander/BCC3004-IC3A_SPHERE_SERVER#readme",
+  "dependencies": {
+    "@prisma/client": "^6.17.0",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "prisma": "^6.17.0"
+  }
+}
