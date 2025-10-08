@@ -1,15 +1,22 @@
-import express from 'express'
-const app = express()
-const port = 3000
+import express from "express";
+import dotenv from "dotenv";
 
-app.get('/', (req, res) => {
-  res.send('Rota inicial!')
-})
+dotenv.config();
+const app = express();
+const port = 3000;
 
-app.get('/usuarios', (req, res) => {
-  res.send('Rota usuário')
-})
+app.get("/", (req, res) => {
+  res.send("Rota inicial!");
+});
+
+app.get("/usuarios", (req, res) => {
+  res.send("Rota usuário");
+});
+
+console.log("Banco conectado:", process.env.DB_NAME);
 
 app.listen(port, () => {
-  console.log(`Servidor rodando na porta: ${port} - Acesse: http://localhost:3000/`)
-})
+  console.log(
+    `Servidor rodando na porta: ${port} - Acesse: http://localhost:3000/`
+  );
+});
