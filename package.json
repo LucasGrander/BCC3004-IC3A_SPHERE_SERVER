@@ -21,6 +21,7 @@
   "homepage": "https://github.com/LucasGrander/BCC3004-IC3A_SPHERE_SERVER#readme",
   "dependencies": {
     "@prisma/client": "^6.17.0",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0"
   },
   "devDependencies": {
