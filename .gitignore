@@ -15,4 +15,3 @@ npm-debug.log*
 # IDE configs
 .vscode/
 
-/generated/prisma
