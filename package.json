@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/LucasGrander/BCC3004-IC3A_SPHERE_SERVER#readme",
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.44.6",
     "express": "^5.1.0",
