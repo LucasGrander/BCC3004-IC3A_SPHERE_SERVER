@@ -7,8 +7,6 @@ const app = express();
 
 const PORT = (process.env.PORT);
 
-const db = drizzle(process.env.DATABASE_URL!);
-
 app.use('/api/users', usersRouter);
 
 app.listen(PORT, () => {
