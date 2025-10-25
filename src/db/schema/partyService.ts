@@ -9,7 +9,6 @@ export const partyService = pgTable("party_service", {
 	serviceId: integer("service_id").references(() => service.id, {onDelete: 'restrict'}).notNull(),
 	partyId: integer("party_id").references(() => party.id, {onDelete: 'restrict'}).notNull(),
 	amount: integer().notNull(),
-	hasCanceled: boolean(),
 	hasRead: boolean(),
 	status: status().notNull(),
 }, (table) => [
