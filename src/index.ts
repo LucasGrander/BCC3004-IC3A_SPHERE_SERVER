@@ -1,17 +1,13 @@
-import express, { type NextFunction, type Request, type Response } from "express";
 import 'dotenv/config';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import usersRouter from "./routes/users";
-
-const app = express();
+import { server } from "./server/Server.js";
 
 const PORT = (process.env.PORT);
 
-app.use('/api/users', usersRouter);
-
-app.listen(PORT, () => {
-    console.log(` Running on Port ${PORT} `)
+server.listen(PORT, () => {
+    console.log(`Server rodando na porta ${PORT}.`)   
 });
+
+
 
 
 
