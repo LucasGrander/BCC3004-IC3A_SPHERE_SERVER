@@ -1,5 +1,5 @@
-import { pgEnum, pgTable, serial, text, uniqueIndex, varchar } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { pgEnum, pgTable, serial, text} from "drizzle-orm/pg-core";
+import { eq, relations } from "drizzle-orm";
 import { party } from "./party";
 import { service } from "./service";
 
@@ -21,5 +21,6 @@ export const personRelations = relations(person, ({ many }) => ({
 
     party: many(party),
     service: many(service)
-    
+
 }));
+
