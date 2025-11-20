@@ -5,7 +5,7 @@ config({ path: '.env' });
 
 export default defineConfig({
     out: './drizzle',
-    schema: './src/db/schema/**/*.ts',
+    schema: './src/database/schema/**/*.ts',
     dialect: 'postgresql',
     dbCredentials: {
         url: process.env.DATABASE_URL!, // Altere aqui para process.env.CLOUD_DATABASE_URL! depois de setar a url do banco remoto (se for usar o remoto)
