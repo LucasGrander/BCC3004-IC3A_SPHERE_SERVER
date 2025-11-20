@@ -31,6 +31,7 @@
     "drizzle-orm": "^0.44.6",
     "express": "^5.1.0",
     "http": "^0.0.1-security",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
 "@types/body-parser": "^1.19.6",
