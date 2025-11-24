@@ -120,7 +120,7 @@ export const selectPartySchema = createSelectSchema(party);
 
 export const paramsSchema = z.object({
 
-    id: z.coerce.number().int().positive().nonoptional()
+    id: z.coerce.number().int().positive()
 
 })
 
@@ -159,7 +159,7 @@ export const updatePartyById = async (id: number, updatedParty: UpdateParty) =>
     await db
         .update(party)
         .set(updatedParty)
-        .where(eq(party.person_id, id))
+        .where(eq(party.id, id))
         .returning({
             id: party.id,
             name: party.name,
@@ -182,7 +182,7 @@ export const getAllPersonPartyById = async (id: number, page: number, limit: num
         .where(
             and(
                 eq(party.person_id, id),
-                filter ? ilike(party.name, `%${filter}`) : undefined
+                filter ? ilike(party.name, `%${filter}%`) : undefined
             )
         )
         .limit(limit)
