@@ -46,6 +46,41 @@ export const partyRelations = relations(party, ({ one, many }) => ({
 
 }));
 
+
+const dateValidationSchema = z.string().superRefine((val, ctx) => {
+    // 1. Verifica o Formato (Regex)
+    // Se falhar aqui, adiciona o erro e RETORNA (para de verificar o resto)
+    if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(val)) {
+        ctx.addIssue({
+            code: "custom",
+            message: "Formato inválido. Use YYYY-MM-DDTHH:MM (ex: 2025-11-25T14:30)",
+        });
+        return z.NEVER;
+    }
+
+    // 2. Verifica se a Data é Real e se está no Futuro
+    const date = new Date(val);
+    const now = new Date();
+
+    // Verificação de data inválida (ex: 2025-02-30)
+    if (isNaN(date.getTime())) {
+        ctx.addIssue({
+            code: "custom",
+            message: "Data inválida (esse dia não existe).",
+        });
+        return z.NEVER;
+    }
+
+    // Verificação de passado
+    if (date <= now) {
+        ctx.addIssue({
+            code: "custom",
+            message: "A data e hora devem ser no futuro!",
+        });
+        return z.NEVER;
+    }
+});
+
 export const bodyCreateSchema = createInsertSchema(party)
     .omit({
         id: true
@@ -53,11 +88,7 @@ export const bodyCreateSchema = createInsertSchema(party)
     .extend({
         name: z.string().min(5, "Nome muito curto!"),
 
-        date: z.coerce
-            .date()
-            .min(new Date(), "Data passada!")
-            .transform(d => d.toISOString().split("T")[0])
-            .pipe(z.string()), // YYYY-MM-DD
+        date: dateValidationSchema,
 
         street: z.string().min(4, "Nome da rua muito curto! Ex: Rua ..."),
         number: z.string().min(1, "Número muito curto!"),
@@ -76,12 +107,7 @@ export const bodyUpdateSchema = createUpdateSchema(party)
     .extend({
         name: z.string().min(5, "Nome muito curto!"),
         
-         date: z.coerce
-            .date()
-            .min(new Date(), "Data passada!")
-            .transform(d => d.toISOString().split("T")[0])
-            .pipe(z.string()), // YYYY-MM-DD
-
+         date: dateValidationSchema,
         street: z.string().min(4, "Nome da rua muito curto! Ex: Rua ..."),
         number: z.string().min(1, "Número muito curto!"),
         complement: z.string().min(5, "Complemento muito curto!"), //.max(..., "Complemento longo demais!")
