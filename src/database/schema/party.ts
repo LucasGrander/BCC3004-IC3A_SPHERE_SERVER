@@ -1,4 +1,4 @@
-import { date, integer, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { person } from "./person";
 import { and, eq, ilike, relations } from "drizzle-orm";
 import { pgEnum } from "drizzle-orm/pg-core";
@@ -10,13 +10,13 @@ import { db } from "..";
 
 export const partyTypes = [
 
-    "PoolParty",
-    "Eletrônica",
-    "Aniversário",
-    "Chá Revelação",
-    "Confraternização",
-    "Formatura",
-    "Casamento",
+    "pool_party",
+    "eletronica",
+    "aniversario",
+    "cha_revelacao",
+    "confraternizacao",
+    "formatura",
+    "casamento",
 
 ] as const;
 
@@ -28,7 +28,7 @@ export const party = pgTable("party", {
 
     id: serial().primaryKey().notNull(),
     name: text('name').notNull(),
-    date: date().notNull(),
+    date: timestamp('date', { mode: "string" }).notNull(),
     street: text('address_street').notNull(),
     number: text('address_number').notNull(),
     complement: text('address_complement'),

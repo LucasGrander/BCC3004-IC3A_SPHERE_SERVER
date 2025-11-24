@@ -43,6 +43,13 @@
       "when": 1763602414853,
       "tag": "0005_bouncy_mikhail_rasputin",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1763980429309,
+      "tag": "0006_plain_deadpool",
+      "breakpoints": true
     }
   ]
 }
