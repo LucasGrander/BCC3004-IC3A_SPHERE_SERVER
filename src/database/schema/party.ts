@@ -7,7 +7,6 @@ import { createInsertSchema, createSelectSchema, createUpdateSchema } from "driz
 import z from "zod";
 import { db } from "..";
 
-
 export const partyTypes = [
 
     "pool_party",
@@ -82,9 +81,6 @@ const dateValidationSchema = z.string().superRefine((val, ctx) => {
 });
 
 export const bodyCreateSchema = createInsertSchema(party)
-    .omit({
-        id: true
-    })
     .extend({
         name: z.string().min(5, "Nome muito curto!"),
 
@@ -100,13 +96,17 @@ export const bodyCreateSchema = createInsertSchema(party)
     });
 
 export const bodyUpdateSchema = createUpdateSchema(party)
-    .omit({
-        id: true,
-        person_id: true,
+    .pick({
+        name:true,
+        date: true,
+        street: true,
+        complement: true,
+        neighborhood: true,
+        city: true,
+        type: true
     })
     .extend({
         name: z.string().min(5, "Nome muito curto!"),
-        
          date: dateValidationSchema,
         street: z.string().min(4, "Nome da rua muito curto! Ex: Rua ..."),
         number: z.string().min(1, "Número muito curto!"),
@@ -114,7 +114,7 @@ export const bodyUpdateSchema = createUpdateSchema(party)
         neighborhood: z.string().min(5, "Nome do Bairro muito curto!"),
         city: z.string().min(5, "Nome da Cidade muito curto"),
         type: z.enum(partyTypes, "Categoria de Festa inválida!"),
-    });
+    }).strict();
 
 export const selectPartySchema = createSelectSchema(party);
 
