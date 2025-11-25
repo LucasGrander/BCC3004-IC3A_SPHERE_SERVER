@@ -48,5 +48,6 @@
     "drizzle.config.ts",
     "./node_modules",
     "./dist",
+    "./tests"
   ],
 }
