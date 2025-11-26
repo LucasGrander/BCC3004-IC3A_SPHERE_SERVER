@@ -7,12 +7,16 @@ export const createValidator: RequestHandler = validate({ body: bodyCreateSchema
 
 export const create = async (req: Request<{}, {}, NewParty>, res: Response) => {
 
-        const result = await createParty(req.body);
+        const result = await createParty(req.validatedBody);
 
-        // if (typeof result === "object"){ 
-        //         result = result.id;
-        // }
-        
-        return res.status(StatusCodes.CREATED).json(result)
+        if (result instanceof Error) {
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                        errors: {
+                                default: result.message
+                        }
+                });
+        }
+
+        return res.status(StatusCodes.CREATED).json(result);
 
 }

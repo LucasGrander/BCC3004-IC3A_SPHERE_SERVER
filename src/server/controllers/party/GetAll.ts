@@ -9,14 +9,20 @@ export const getAllValidator: RequestHandler = validate({ params: paramsSchema, 
 
 export const getAll = async (req: Request, res: Response) => {
 
-    console.log(req.validatedParams);
     const { id } = req.validatedParams;
 
-    console.log(req.validatedQuery);
     const { page, limit, filter } = req.validatedQuery;
 
     const result = await getAllPersonPartyById(id, page, limit, filter);
 
-    return res.status(StatusCodes.OK).json(result)
+    if(result instanceof Error) {
+        return res.status(StatusCodes.NOT_FOUND).json({
+            errors: {
+                default: result.message
+            }
+        });
+    }
+
+    return res.status(StatusCodes.OK).json(result);
 
 }

@@ -1,6 +1,6 @@
 import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { person } from "./person";
-import { and, eq, ilike, relations } from "drizzle-orm";
+import { and, eq, ilike, or, relations } from "drizzle-orm";
 import { pgEnum } from "drizzle-orm/pg-core";
 import { partyService } from "./partyService";
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
@@ -97,7 +97,7 @@ export const bodyCreateSchema = createInsertSchema(party)
 
 export const bodyUpdateSchema = createUpdateSchema(party)
     .pick({
-        name:true,
+        name: true,
         date: true,
         street: true,
         complement: true,
@@ -107,7 +107,7 @@ export const bodyUpdateSchema = createUpdateSchema(party)
     })
     .extend({
         name: z.string().min(5, "Nome muito curto!"),
-         date: dateValidationSchema,
+        date: dateValidationSchema,
         street: z.string().min(4, "Nome da rua muito curto! Ex: Rua ..."),
         number: z.string().min(1, "Número muito curto!"),
         complement: z.string().min(5, "Complemento muito curto!"), //.max(..., "Complemento longo demais!")
@@ -135,78 +135,231 @@ export const querySchema = z.object({
 export type NewParty = z.infer<typeof bodyCreateSchema>;
 export type UpdateParty = z.infer<typeof bodyUpdateSchema>;
 export type SelectParty = z.infer<typeof selectPartySchema>;
-export type Query = z.infer<typeof querySchema>
-export type Params = z.infer<typeof paramsSchema>
+export type Query = z.infer<typeof querySchema>;
+export type Params = z.infer<typeof paramsSchema>;
 
 
-export const createParty = async (newParty: NewParty) =>
-    await db
-        .insert(party)
-        .values(newParty)
-        .returning({
-            id: party.id,
-            name: party.name,
-            date: party.date,
-            street: party.street,
-            number: party.number,
-            complement: party.complement,
-            neighborhood: party.neighborhood,
-            city: party.city,
-            type: party.type
-        });
+export const createParty = async (newParty: NewParty): Promise<SelectParty | Error> => {
 
-export const updatePartyById = async (id: number, updatedParty: UpdateParty) => 
-    await db
-        .update(party)
-        .set(updatedParty)
-        .where(eq(party.id, id))
-        .returning({
-            id: party.id,
-            name: party.name,
-            date: party.date,
-            street: party.street,
-            number: party.number,
-            complement: party.complement,
-            neighborhood: party.neighborhood,
-            city: party.city,
-            type: party.type
-        })
+    try {
 
-export const getAllPersonPartyById = async (id: number, page: number, limit: number, filter?: string) =>{
+        if (newParty.id) {
+            const cnt = await db.$count(party, eq(party.id, newParty.id));
 
-    const offset = (page - 1) * limit;
-    
-    return await db   
-        .select()
-        .from(party)
-        .where(
-            and(
-                eq(party.person_id, id),
-                filter ? ilike(party.name, `%${filter}%`) : undefined
+            if (cnt !== 0) {
+                return new Error('Festa com este id já existente.');
+            }
+        }
+
+
+        const result = await db
+            .insert(party)
+            .values(newParty)
+            .returning({
+                id: party.id,
+                name: party.name,
+                date: party.date,
+                street: party.street,
+                number: party.number,
+                complement: party.complement,
+                neighborhood: party.neighborhood,
+                city: party.city,
+                type: party.type,
+                person_id: party.person_id
+            });
+
+        const createdParty = result[0]
+
+        if (!createdParty) { 
+            return new Error('Erro ao inserir registro no banco');
+        }
+
+        return createdParty;
+        
+    } catch (e) {
+
+        console.log("Erro no createParty:", e);
+
+        if (e instanceof Error){ 
+            return e;
+        }
+
+        return new Error('Erro desconhecido ao criar festa');
+    }
+
+}
+
+export const updatePartyById = async (id: number, updatedParty: UpdateParty): Promise<SelectParty | Error> => {
+
+    try {
+
+        const cnt = await db.$count(party, eq(party.id, id));
+
+        if (cnt === 0) {
+            return new Error('Festa não encontrada.');
+        }
+
+        const result = await db
+            .update(party)
+            .set(updatedParty)
+            .where(eq(party.id, id))
+            .returning({
+                id: party.id,
+                name: party.name,
+                date: party.date,
+                street: party.street,
+                number: party.number,
+                complement: party.complement,
+                neighborhood: party.neighborhood,
+                city: party.city,
+                type: party.type,
+                person_id: party.person_id
+            });
+
+
+        const updtedParty = result[0]
+
+        if (!updtedParty) { 
+            return new Error('Erro ao atualizar registro no banco');
+        }
+
+        return updtedParty;
+        
+    } catch (e) {
+
+        console.log("Erro no updatePartyById:", e);
+
+        if (e instanceof Error){ 
+            return e;
+        }
+
+        return new Error('Erro desconhecido ao atualizar festa');
+    }
+
+
+}
+
+export const getAllPersonPartyById = async (id: number, page: number, limit: number, filter?: string): Promise<SelectParty[] | Error> => {
+
+    try {
+
+        const offset = (page - 1) * limit;
+
+        const cnt = await db.$count(person, eq(person.id, id));
+
+        if (cnt === 0) {
+            return new Error('Organizador não encontrado.');
+        }
+
+        const result = await db
+            .select()
+            .from(party)
+            .where(
+                and(
+                    eq(party.person_id, id),
+                    or(
+                        filter ? ilike(party.name, `%${filter}%`) : undefined,
+                        filter ? ilike(party.city, `%${filter}%`) : undefined
+                    )
+                    
+                )
+                
             )
-        )
-        .limit(limit)
-        .offset(offset)
+            .limit(limit)
+            .offset(offset);
 
-} 
-  
-export const getPartyById = async (id: number) => 
-    await db 
-        .select({
-            name: party.name,
-            date: party.date,
-            street: party.street,
-            number: party.number,
-            complement: party.complement,
-            neighborhood: party.neighborhood,
-            city: party.city,
-            type: party.type
-        }).from(party).where(eq(party.id, id));
 
-export const deletePartyById = async (id: number) =>
-    await db
-        .delete(party)
-        .where(eq(party.id, id))
-        .returning({
-            deletedId: party.id
-        })
+        if (!result) { 
+            return new Error('Erro ao buscar registros no banco');
+        }
+
+        return result;
+        
+    } catch (e) {
+
+        console.log("Erro no getAllPersonPartyById:", e);
+
+        if (e instanceof Error){ 
+            return e;
+        }
+
+        return new Error('Erro desconhecido ao buscar festas');
+    }
+
+}
+
+export const getPartyById = async (id: number): Promise<SelectParty | Error> => {
+
+    try {
+
+        const cnt = await db.$count(party, eq(party.id, id));
+
+        if (cnt === 0) {
+            return new Error('Festa não encontrada.');
+        }
+
+        const result = await db
+            .select({
+                id: party.id,
+                name: party.name,
+                date: party.date,
+                street: party.street,
+                number: party.number,
+                complement: party.complement,
+                neighborhood: party.neighborhood,
+                city: party.city,
+                type: party.type,
+                person_id: party.person_id
+            }).from(party).where(eq(party.id, id));
+
+        const foundParty = result[0];
+
+        if (!foundParty) { 
+            return new Error('Erro ao buscar registro no banco');
+        }
+
+        return foundParty;
+        
+    } catch (e) {
+
+        console.log("Erro no getPartyById:", e);
+
+        if (e instanceof Error){ 
+            return e;
+        }
+
+        return new Error('Erro desconhecido ao buscar festa');
+    }
+
+
+
+}
+export const deletePartyById = async (id: number): Promise<void | Error> => {
+
+    try {
+
+
+        const cnt = await db.$count(party, eq(party.id, id));
+
+        if (cnt === 0) {
+            return new Error('Festa não encontrada.');
+        }
+
+
+        const result = await db
+            .delete(party)
+            .where(eq(party.id, id))
+            .returning({
+                deletedId: party.id
+            });
+
+        if (result) return;
+
+        return new Error('Erro ao deletar a festa');
+
+    } catch (error) {
+
+        return new Error('Erro ao deletar a festa');
+    }
+
+}

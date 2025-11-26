@@ -8,10 +8,15 @@ export const deleteByIdValidator: RequestHandler = validate({ params: paramsSche
 
 export const deleteById = async (req: Request, res: Response) => {
 
-
-    console.log(req.validatedParams);
-
     const result = await deletePartyById(req.validatedParams.id);
+
+    if (result instanceof Error) { 
+        return res.status(StatusCodes.NOT_FOUND).json({
+            errors: { 
+                default: result.message
+            }
+        });
+    }
 
     return res.status(StatusCodes.NO_CONTENT).send();
 
