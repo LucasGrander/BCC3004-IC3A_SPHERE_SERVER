@@ -11,7 +11,7 @@ export const person = pgTable("person", {
     id: serial().primaryKey().notNull(),
     name: text('name').notNull(),
     email: text('email').notNull().unique(),
-    passwd: text('passord').notNull(),
+    password: text('password').notNull(),
     phone: text('phone'),
     role: roles().notNull(),
 
