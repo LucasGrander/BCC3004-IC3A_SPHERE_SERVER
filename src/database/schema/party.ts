@@ -106,14 +106,14 @@ export const bodyUpdateSchema = createUpdateSchema(party)
         type: true
     })
     .extend({
-        name: z.string().min(5, "Nome muito curto!"),
-        date: dateValidationSchema,
-        street: z.string().min(4, "Nome da rua muito curto! Ex: Rua ..."),
-        number: z.string().min(1, "Número muito curto!"),
-        complement: z.string().min(5, "Complemento muito curto!"), //.max(..., "Complemento longo demais!")
-        neighborhood: z.string().min(5, "Nome do Bairro muito curto!"),
-        city: z.string().min(5, "Nome da Cidade muito curto"),
-        type: z.enum(partyTypes, "Categoria de Festa inválida!"),
+        name: z.string().min(5, "Nome muito curto!").optional(),
+        date: dateValidationSchema.optional(),
+        street: z.string().min(4, "Nome da rua muito curto! Ex: Rua ...").optional(),
+        number: z.string().min(1, "Número muito curto!").optional(),
+        complement: z.string().min(5, "Complemento muito curto!").optional(), //.max(..., "Complemento longo demais!")
+        neighborhood: z.string().min(5, "Nome do Bairro muito curto!").optional(),
+        city: z.string().min(5, "Nome da Cidade muito curto").optional(),
+        type: z.enum(partyTypes, "Categoria de Festa inválida!").optional(),
     }).strict();
 
 export const selectPartySchema = createSelectSchema(party);
