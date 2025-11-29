@@ -36,18 +36,12 @@
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-    "esModuleInterop": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "include": ["src/**/*"],
-  "exclude": [
-    "drizzle.config.ts",
-    "./node_modules",
-    "./dist",
-    "./tests"
-  ],
+  "include": ["src"],
+  "exclude": ["drizzle.config.ts"],
 }

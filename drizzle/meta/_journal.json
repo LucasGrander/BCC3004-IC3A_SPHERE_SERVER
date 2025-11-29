@@ -22,34 +22,6 @@
       "when": 1761395692074,
       "tag": "0002_woozy_bucky",
       "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1762441841969,
-      "tag": "0003_petite_nicolaos",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1763601795896,
-      "tag": "0004_perfect_tombstone",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1763602414853,
-      "tag": "0005_bouncy_mikhail_rasputin",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1763980429309,
-      "tag": "0006_plain_deadpool",
-      "breakpoints": true
     }
   ]
 }
