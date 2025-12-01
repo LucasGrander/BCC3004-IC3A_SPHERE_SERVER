@@ -156,4 +156,27 @@ describe('Party - Create', () => {
         expect(test05.body).toHaveProperty('errors.default');
         
     });
+
+    it('T06 - Tenta criar uma festa com id de pessoa inexistente', async () => {
+
+        const test06 = await testServer
+            .post('/party')
+            .send({
+                name: "Teste06",
+                date: "2030-12-31T13:13",
+                street: "Rua T06",
+                number: "N T06",
+                complement: "Perto do T05",
+                neighborhood: "Gueto dos testes",
+                city: "Testelândia",
+                type: "formatura",
+                person_id: 9999
+
+            });
+
+
+        expect(test06.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+        expect(test06.body).toHaveProperty('errors.default');
+        
+    });
 });
