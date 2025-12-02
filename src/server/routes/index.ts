@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
-import { PartyController } from "../controllers";
+import { PartyController, PersonController } from "../controllers";
+import { ensureAuthenticated } from "../shared/middleware";
+
 
 const router = Router();
 
@@ -14,6 +16,11 @@ router.put('/party/:id', PartyController.updateByIdValidator, PartyController.up
 router.get('/party/all/:id', PartyController.getAllValidator, PartyController.getAll);
 router.get('/party/:id', PartyController.getByIdValidator, PartyController.getById);
 router.delete('/party/:id', PartyController.deleteByIdValidator, PartyController.deleteById);
+
+router.post('/signup', PersonController.signUpValidator, PersonController.signUp);
+router.post('/signin', PersonController.signInValidator, PersonController.signIn);
+// router.get('/person/:id', PersonController.getByIdValidator, PersonController.getById);
+// router.delete('/person/:id', PersonController.deleteByIdValidator, PersonController.deleteById);
 
 
 export { router };

@@ -7,7 +7,9 @@ import { StatusCodes } from "http-status-codes";
 export const signUpValidator: RequestHandler = validate({body: bodyCreateSchema });
 
 export const signUp = async(req: Request<{}, {}, NewPerson>, res:Response ) => {
+
     const result = await createPerson(req.validatedBody);
+    
     if(result instanceof Error){
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             errors:{
