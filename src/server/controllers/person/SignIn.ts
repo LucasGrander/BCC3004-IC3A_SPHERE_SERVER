@@ -42,7 +42,13 @@ export const signIn = async (req: Request<{}, {}, SignIn>, res: Response) => {
             });
         }
 
-        return res.status(StatusCodes.OK).json({ accessToken });
+        return res.status(StatusCodes.OK).json({ 
+
+            id: person.id,
+            role: person.role,
+            token: accessToken
+
+         });
     }
 
 }
