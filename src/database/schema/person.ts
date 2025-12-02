@@ -5,6 +5,7 @@ import { service } from "./service";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 import { db } from "..";
+import { PasswordCrypto } from "../../server/shared/services";
 
 export const personRoles = [
     "Fornecedor",
@@ -68,9 +69,12 @@ export type Params = z.infer<typeof paramsSchema>;
 
 export const createPerson = async (newPerson: NewPerson): Promise<SelectPerson|Error> =>{
     try {
+
+        const hashedPassword = await PasswordCrypto.hashPassword(newPerson.password);
+        
         const result = await db
             .insert(person)
-            .values(newPerson)
+            .values({...newPerson, password: hashedPassword})
             .returning({
                 id: person.id,
                 name: person.name,
