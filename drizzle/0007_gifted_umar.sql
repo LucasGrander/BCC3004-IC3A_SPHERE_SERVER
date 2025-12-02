@@ -1,0 +1,1 @@
+ALTER TABLE "person" ADD COLUMN "salt" text NOT NULL;

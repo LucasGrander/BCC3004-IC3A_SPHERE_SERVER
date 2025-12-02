@@ -23,11 +23,6 @@ describe('Party - DeleteById', () => {
         
     })
 
-    afterAll( async() => {
-        const deleteCreation = await testServer
-            .delete('/party/10');
-    })
-
     it('T00 - Tenta deletar uma festa', async () => {
 
         const test00 = await testServer
