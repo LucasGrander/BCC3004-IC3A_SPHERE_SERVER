@@ -3,7 +3,7 @@ import { eq, relations } from "drizzle-orm";
 import { party } from "./party";
 import { service } from "./service";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { email, z } from "zod";
+import { z } from "zod";
 import { db } from "..";
 
 export const personRoles = [
@@ -36,7 +36,7 @@ export const bodyCreateSchema = createInsertSchema(person)
         name: z.string().min(5,'Nome muito curto!'),
         email: z.email('Email não inserido ou formado invalido').min(5,'Email muito curto!').max(30,'Email muito grande!'),
         password: z.string().min(5,"Senha muita curta!").max(50, 'Senha muito longa!'),
-        phone: z.string().min(9,'Numero muito curto!').max(15,'Numero muito longo!'),
+        phone: z.string().min(9,'Numero muito curto!').max(15,'Numero muito longo!').optional().default('Não Informado'),
         role: z.enum(personRoles,'Cargo invalido!')
     });
 
