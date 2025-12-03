@@ -1,15 +1,23 @@
 import { type Request, type RequestHandler, type Response } from "express";
-import { getAllPersonPartyById, paramsSchema, querySchema, type Params, type Query } from "../../../database/schema/party";
+import { getAllPersonPartyById, querySchema } from "../../../database/schema/party";
 import { StatusCodes } from "http-status-codes";
 import { validate } from "../../shared/middleware/Validation";
 
 
 
-export const getAllValidator: RequestHandler = validate({ params: paramsSchema, query: querySchema });
+export const getAllValidator: RequestHandler = validate({ query: querySchema });
 
 export const getAll = async (req: Request, res: Response) => {
 
-    const { id } = req.validatedParams;
+    if (req.headers.personRole !== 'Organizador') {
+            return res.status(StatusCodes.FORBIDDEN).json({
+                errors: {
+                    default: "Função apenas para Organizadores."
+                }
+            });
+        }
+
+    const id = Number(req.headers.personId);
 
     const { page, limit, filter } = req.validatedQuery;
 
