@@ -43,9 +43,10 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*.*"],
   "exclude": [
     "drizzle.config.ts",
+    "./jest.config.ts",
     "./node_modules",
     "./dist",
     "./tests"
