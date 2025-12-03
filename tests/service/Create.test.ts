@@ -93,7 +93,7 @@ describe('Service - Create', () => {
                 name: "TesteTesteTesteTesteTesteTeste",
                 description: "TesteTesteTesteTesteTesteTesteTesteTesteTesteTeste",
                 type: "Infra",
-                price: "2.75",
+                price: "2.85",
                 person_id: id
             });
 
@@ -178,5 +178,42 @@ describe('Service - Create', () => {
         expect(test06.body).toHaveProperty('errors.default');
 
     });
+
+    it('T07 - Tenta criar um serviço de valor 0', async () => {
+
+        const test07 = await testServer
+            .post('/service')
+            .set({ authorization: `Bearer ${accessToken}` })
+            .send({
+                name: "Balões do T07",
+                description: "Balões de todas as cores e tamanhos",
+                type: "Entreterimento",
+                price: "0",
+                person_id: id
+            }); 
+
+        expect(test07.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+        expect(test07.body).toHaveProperty('errors.body.price');
+
+    });
+
+    it('T08 - Tenta criar um serviço de valor negativo', async () => {
+
+        const test08 = await testServer
+            .post('/service')
+            .set({ authorization: `Bearer ${accessToken}` })
+            .send({
+                name: "Balões do T08",
+                description: "Balões de todas as cores e tamanhos",
+                type: "Entreterimento",
+                price: "-1.75",
+                person_id: id
+            }); 
+
+        expect(test08.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+        expect(test08.body).toHaveProperty('errors.body.price');
+
+    });
+
 
 });
