@@ -6,7 +6,6 @@ import { JWTService } from "../services";
 export const ensureAuthenticated: RequestHandler = async (req, res, next) => {
 
     const { authorization } = req.headers
-    console.log(req.headers);
 
     if (!authorization) {
         return res.status(StatusCodes.UNAUTHORIZED).json({
@@ -33,8 +32,6 @@ export const ensureAuthenticated: RequestHandler = async (req, res, next) => {
             errors: { default: "Não Autenticado" }
         })
     }
-
-    console.log(jwtData);
 
     req.headers.personId = jwtData.uid.toString();
     req.headers.personRole = jwtData.role.toString();
