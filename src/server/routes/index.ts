@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
-import { PartyController, PersonController } from "../controllers";
+import { PartyController, PersonController, ServiceController } from "../controllers";
 import { ensureAuthenticated } from "../shared/middleware";
 
 
@@ -16,6 +16,12 @@ router.put('/party/:id', ensureAuthenticated, PartyController.updateByIdValidato
 router.get('/party/all', ensureAuthenticated, PartyController.getAllValidator, PartyController.getAll);
 router.get('/party/:id', ensureAuthenticated, PartyController.getByIdValidator, PartyController.getById);
 router.delete('/party/:id', ensureAuthenticated, PartyController.deleteByIdValidator, PartyController.deleteById);
+
+router.post('/service', ensureAuthenticated, ServiceController.createValidator, ServiceController.create);
+router.put('/service/:id', ensureAuthenticated, ServiceController.updateByIdValidator, ServiceController.updateById);
+router.get('/service/all', ensureAuthenticated, ServiceController.getAllValidator, ServiceController.getAll);
+router.get('/service/:id', ensureAuthenticated, ServiceController.getByIdValidator, ServiceController.getById);
+router.delete('/service/:id', ensureAuthenticated, ServiceController.deleteByIdValidator, ServiceController.deleteById);
 
 router.post('/signup', PersonController.signUpValidator, PersonController.signUp);
 router.post('/signin', PersonController.signInValidator, PersonController.signIn);
