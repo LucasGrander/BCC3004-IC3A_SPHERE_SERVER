@@ -1,5 +1,6 @@
 import { StatusCodes } from "http-status-codes"
 import { testServer } from "../jest.setup"
+import { deletePersonById } from "../../src/database/schema/person";
 
 describe('Person - SignIn', () => {
 
@@ -16,15 +17,13 @@ describe('Person - SignIn', () => {
                 name: 'signInTest',
                 email: email,
                 password: pass,
-                phone: '(99)9999-99999',
                 role: 'Organizador'
             })
  
     })
 
     afterAll( async() => {
-        const deleteAcc = await testServer
-            .delete(`/person/${id}`)
+        const deleteAcc = await deletePersonById(id);
     })
 
     it('T00 - Tenta entrar em uma conta (existente)', async() => {
@@ -38,7 +37,9 @@ describe('Person - SignIn', () => {
 
 
         expect(test00.statusCode).toEqual(StatusCodes.OK);
-        expect(test00.body).toHaveProperty('accessToken');
+        expect(test00.body).toHaveProperty('token');
+        expect(test00.body).toHaveProperty('id');
+        expect(test00.body).toHaveProperty('role');
 
     })
 
@@ -57,7 +58,7 @@ describe('Person - SignIn', () => {
 
     })
 
-    it('T02 - Tenta entrar com senha inálida', async() => {
+    it('T02 - Tenta entrar com senha inválida', async() => {
 
         const test02 = await testServer
             .post('/signin')

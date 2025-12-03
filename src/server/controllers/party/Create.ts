@@ -6,8 +6,16 @@ import { validate } from "../../shared/middleware/Validation";
 export const createValidator: RequestHandler = validate({ body: bodyCreateSchema })
 
 export const create = async (req: Request<{}, {}, NewParty>, res: Response) => {
+        
+        if (req.headers.personRole !== 'Organizador') {
+                return res.status(StatusCodes.FORBIDDEN).json({
+                        errors: {
+                                default: "Função apenas para Organizadores."
+                        }
+                });
+        }
 
-        const result = await createParty(req.validatedBody);
+        const result = await createParty({...req.validatedBody, person_id: Number(req.headers.personId)});
 
         if (result instanceof Error) {
                 return res.status(StatusCodes.BAD_REQUEST).json({

@@ -1,18 +1,53 @@
 import { StatusCodes } from "http-status-codes";
 import { testServer } from "../jest.setup";
+import { deletePersonById } from "../../src/database/schema/person";
 
 
 describe('Party - Create', () => {
 
+    const email = 'cPartyTests@mail.com';
+    const pass = 'S2nH41';
+    const id = 222;
+    let accessToken = '';
+
+    beforeAll( async() => {
+
+        const createAcc = await testServer
+            .post('/signup')
+            .send({ 
+
+                id: id,
+                name: 'createTest',
+                email: email,
+                password: pass,
+                role: 'Organizador'
+            })
+
+        const logAcc = await testServer 
+            .post('/signin')
+            .send({
+                email: email,
+                password: pass
+            })
+
+        accessToken = logAcc.body.token;
+
+    })
+
+
     afterAll( async() => {
         const deleteCreation = await testServer
-            .delete('/party/1');
+            .delete('/party/1')
+            .set({ authorization: `Bearer ${accessToken}`});
+
+        const deleteAcc = await deletePersonById(id)
     })
 
     it('T00 - Tenta criar uma festa', async () => {
 
         const test00 = await testServer
             .post('/party')
+            .set({ authorization: `Bearer ${accessToken}` })
             .send({
                 id: 1,
                 name: "Teste00",
@@ -23,13 +58,15 @@ describe('Party - Create', () => {
                 neighborhood: "Gueto T00",
                 city: "T00wn",
                 type: "formatura",
-                person_id: 1
+                person_id: id
 
             });
 
 
         expect(test00.statusCode).toEqual(StatusCodes.CREATED);
         expect(typeof test00.body).toEqual('object');
+
+        console.log(test00.statusCode);
         
     });
 
@@ -37,6 +74,7 @@ describe('Party - Create', () => {
 
         const test01 = await testServer
             .post('/party')
+            .set({ authorization: `Bearer ${accessToken}` })
             .send({
                 name: "T01",
                 date: "2030-12-31T13:13",
@@ -46,8 +84,7 @@ describe('Party - Create', () => {
                 neighborhood: "T01",
                 city: "T01",
                 type: "formatura",
-                person_id: 1
-
+                person_id: id
             });
 
 
@@ -65,6 +102,7 @@ describe('Party - Create', () => {
 
         const test02 = await testServer
             .post('/party')
+            .set({ authorization: `Bearer ${accessToken}` })
             .send({
                 name: "Teste02",
                 date: "2030-14-56T32:99",
@@ -74,7 +112,7 @@ describe('Party - Create', () => {
                 neighborhood: "Gueto dos testes",
                 city: "Testelândia",
                 type: "formatura",
-                person_id: 1
+                person_id: id
 
             });
 
@@ -89,6 +127,7 @@ describe('Party - Create', () => {
 
         const test03 = await testServer
             .post('/party')
+            .set({ authorization: `Bearer ${accessToken}` })
             .send({
                 name: "Teste03",
                 date: "2030/14/56 - 07:00",
@@ -98,7 +137,7 @@ describe('Party - Create', () => {
                 neighborhood: "Gueto dos testes",
                 city: "Testelândia",
                 type: "formatura",
-                person_id: 1
+                person_id: id
 
             });
 
@@ -113,6 +152,7 @@ describe('Party - Create', () => {
 
         const test04 = await testServer
             .post('/party')
+            .set({ authorization: `Bearer ${accessToken}` })
             .send({
                 name: "Teste04",
                 date: "2040-14-56T07:00",
@@ -122,7 +162,7 @@ describe('Party - Create', () => {
                 neighborhood: "Gueto dos testes",
                 city: "Testelândia",
                 type: "Rolê",
-                person_id: 1
+                person_id: id
 
             });
 
@@ -137,6 +177,7 @@ describe('Party - Create', () => {
 
         const test05 = await testServer
             .post('/party')
+            .set({ authorization: `Bearer ${accessToken}` })
             .send({
                 id: 1,
                 name: "Teste05",
@@ -147,36 +188,13 @@ describe('Party - Create', () => {
                 neighborhood: "Gueto dos testes",
                 city: "Testelândia",
                 type: "formatura",
-                person_id: 1
+                person_id: id
 
             });
 
 
         expect(test05.statusCode).toEqual(StatusCodes.BAD_REQUEST);
         expect(test05.body).toHaveProperty('errors.default');
-        
-    });
-
-    it('T06 - Tenta criar uma festa com id de pessoa inexistente', async () => {
-
-        const test06 = await testServer
-            .post('/party')
-            .send({
-                name: "Teste06",
-                date: "2030-12-31T13:13",
-                street: "Rua T06",
-                number: "N T06",
-                complement: "Perto do T05",
-                neighborhood: "Gueto dos testes",
-                city: "Testelândia",
-                type: "formatura",
-                person_id: 9999
-
-            });
-
-
-        expect(test06.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-        expect(test06.body).toHaveProperty('errors.default');
         
     });
 });

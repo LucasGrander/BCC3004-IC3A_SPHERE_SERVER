@@ -1,14 +1,16 @@
 import { StatusCodes } from "http-status-codes"
 import { testServer } from "../jest.setup"
+import { deletePersonById } from "../../src/database/schema/person";
 
 describe('Person - SignUp', () => {
 
     const email = 'Teste00@mail.com';
-    const id = 2;
+    const id = 2212;
     
     afterAll( async() => {
-        const deleteCreation = await testServer
-            .delete(`/person/${id}`);
+
+        const deleteAcc = await deletePersonById(id)
+        
     })
     
     it('T00 - Tenta cadastrar uma pessoa', async() => {

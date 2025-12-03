@@ -13,14 +13,14 @@ router.get('/', (_, res) =>{
 
 router.post('/party', ensureAuthenticated, PartyController.createValidator, PartyController.create);
 router.put('/party/:id', ensureAuthenticated, PartyController.updateByIdValidator, PartyController.updateById);
-router.get('/party/all/:id', ensureAuthenticated, PartyController.getAllValidator, PartyController.getAll);
+router.get('/party/all', ensureAuthenticated, PartyController.getAllValidator, PartyController.getAll);
 router.get('/party/:id', ensureAuthenticated, PartyController.getByIdValidator, PartyController.getById);
 router.delete('/party/:id', ensureAuthenticated, PartyController.deleteByIdValidator, PartyController.deleteById);
 
 router.post('/signup', PersonController.signUpValidator, PersonController.signUp);
 router.post('/signin', PersonController.signInValidator, PersonController.signIn);
 // router.get('/person/:id', PersonController.getByIdValidator, PersonController.getById);
-// router.delete('/person/:id', PersonController.deleteByIdValidator, PersonController.deleteById);
+router.delete('/person/:id', PersonController.deleteByIdValidator, PersonController.deleteById);
 
 
 export { router };
