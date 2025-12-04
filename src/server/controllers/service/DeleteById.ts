@@ -7,7 +7,7 @@ export const deleteByIdValidator: RequestHandler = validate({ params: paramsSche
 
 export const deleteById = async (req: Request, res: Response) => {
 
-    if (req.headers.personRole !== 'Fornecedor') {
+    if (req.headers.personRole !== 'fornecedor') {
         return res.status(StatusCodes.FORBIDDEN).json({
             errors: {
                 default: "Função apenas para Fornecedores."

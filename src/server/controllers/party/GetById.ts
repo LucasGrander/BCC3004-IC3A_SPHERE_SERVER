@@ -7,7 +7,7 @@ export const getByIdValidator: RequestHandler = validate({ params: paramsSchema 
 
 export const getById = async (req: Request, res: Response) => {
 
-    if (req.headers.personRole !== 'Organizador') {
+    if (req.headers.personRole !== 'organizador') {
         return res.status(StatusCodes.FORBIDDEN).json({
             errors: {
                 default: "Função apenas para Organizadores."

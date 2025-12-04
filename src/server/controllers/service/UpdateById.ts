@@ -8,7 +8,7 @@ export const updateByIdValidator: RequestHandler = validate({ params: paramsSche
 
 export const updateById = async (req: Request<{}, {}, UpdatedService>, res: Response) => {
 
-    if (req.headers.personRole !== 'Fornecedor') {
+    if (req.headers.personRole !== 'fornecedor') {
         return res.status(StatusCodes.FORBIDDEN).json({
             errors: {
                 default: "Função apenas para Fornecedores."
