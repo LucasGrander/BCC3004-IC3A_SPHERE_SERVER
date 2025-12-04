@@ -20,7 +20,7 @@ describe('Party - Create', () => {
                 name: 'createTest',
                 email: email,
                 password: pass,
-                role: 'Organizador'
+                role: 'organizador'
             })
 
         const logAcc = await testServer 
@@ -57,7 +57,7 @@ describe('Party - Create', () => {
                 complement: "Mercado T00",
                 neighborhood: "Gueto T00",
                 city: "T00wn",
-                type: "formatura",
+                type: "Formatura",
                 person_id: id
 
             });
@@ -83,7 +83,7 @@ describe('Party - Create', () => {
                 complement: "T01",
                 neighborhood: "T01",
                 city: "T01",
-                type: "formatura",
+                type: "Formatura",
                 person_id: id
             });
 
@@ -111,7 +111,7 @@ describe('Party - Create', () => {
                 complement: "Perto do T01",
                 neighborhood: "Gueto dos testes",
                 city: "Testelândia",
-                type: "formatura",
+                type: "Formatura",
                 person_id: id
 
             });
@@ -136,7 +136,7 @@ describe('Party - Create', () => {
                 complement: "Perto do T02",
                 neighborhood: "Gueto dos testes",
                 city: "Testelândia",
-                type: "formatura",
+                type: "Formatura",
                 person_id: id
 
             });
@@ -187,7 +187,7 @@ describe('Party - Create', () => {
                 complement: "Perto do T04",
                 neighborhood: "Gueto dos testes",
                 city: "Testelândia",
-                type: "formatura",
+                type: "Formatura",
                 person_id: id
 
             });

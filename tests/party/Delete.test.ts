@@ -7,14 +7,12 @@ describe('Party - DeleteById', () => {
 
     const email = 'dPartyTests@mail.com';
     const pass = 'S2nH41';
-    const PersId = 333;
-    const PartId = 331;
+    const Id = 333;
     let accessToken = '';
 
     const email2 = 'dPrtyTest@mail.com';
     const pass2 = 'S2nH41';
-    const PersId2 = 223;
-    const PartId2 = 311;
+    const Id2 = 223;
     let accessToken2 = '';
 
     beforeAll(async () => {
@@ -23,11 +21,11 @@ describe('Party - DeleteById', () => {
             .post('/signup')
             .send({
 
-                id: PersId,
+                id: Id,
                 name: 'TestDel',
                 email: email,
                 password: pass,
-                role: 'Organizador'
+                role: 'organizador'
             })
 
         const logAcc1 = await testServer
@@ -43,7 +41,7 @@ describe('Party - DeleteById', () => {
             .post('/party')
             .set({ authorization: `Bearer ${accessToken}` })
             .send({
-                id: PartId,
+                id: Id,
                 name: "Teste00",
                 date: "2030-12-31T13:13",
                 street: "Rua T00",
@@ -51,8 +49,8 @@ describe('Party - DeleteById', () => {
                 complement: "Mercado T00",
                 neighborhood: "Gueto T00",
                 city: "T00wn",
-                type: "formatura",
-                person_id: PersId
+                type: "Formatura",
+                person_id: Id
 
             });
 
@@ -60,11 +58,11 @@ describe('Party - DeleteById', () => {
             .post('/signup')
             .send({
 
-                id: PersId2,
+                id: Id2,
                 name: 'TestDel',
                 email: email2,
                 password: pass2,
-                role: 'Organizador'
+                role: 'organizador'
             })
 
         const logAcc2 = await testServer
@@ -80,7 +78,7 @@ describe('Party - DeleteById', () => {
             .post('/party')
             .set({ authorization: `Bearer ${accessToken2}` })
             .send({
-                id: PartId2,
+                id: Id2,
                 name: "Teste00",
                 date: "2030-12-31T13:13",
                 street: "Rua T00",
@@ -88,8 +86,8 @@ describe('Party - DeleteById', () => {
                 complement: "Mercado T00",
                 neighborhood: "Gueto T00",
                 city: "T00wn",
-                type: "formatura",
-                person_id: PersId2
+                type: "Formatura",
+                person_id: Id2
 
             });
 
@@ -99,20 +97,16 @@ describe('Party - DeleteById', () => {
 
     afterAll(async () => {
 
-        const deleteParty2 = await testServer
-            .delete(`/party/${PartId2}`)
-            .set({ authorization: `Bearer ${accessToken2}` });
+        const deleteAcc1 = await deletePersonById(Id);
 
-        const deleteAcc1 = await deletePersonById(PersId);
-
-        const deleteAcc2 = await deletePersonById(PersId2);
+        const deleteAcc2 = await deletePersonById(Id2);
 
     })
 
     it('T00 - Tenta deletar uma festa', async () => {
 
         const test00 = await testServer
-            .delete(`/party/${PartId}`)
+            .delete(`/party/${Id}`)
             .set({ authorization: `Bearer ${accessToken}` });
 
         expect(test00.statusCode).toEqual(StatusCodes.NO_CONTENT);
@@ -124,7 +118,7 @@ describe('Party - DeleteById', () => {
     it('T01 - Tenta deletar uma festa inexistente', async () => {
 
         const test01 = await testServer
-            .delete('/party/99999')
+            .delete('/party/9999')
             .set({ authorization: `Bearer ${accessToken}` });
 
 
@@ -149,7 +143,7 @@ describe('Party - DeleteById', () => {
     it('T03 - Tenta deletar uma festa que não pertence ao usuário', async () => {
 
         const test03 = await testServer
-            .delete(`/party/${PartId2}`)
+            .delete(`/party/${Id2}`)
             .set({ authorization: `Bearer ${accessToken}` })
 
 
@@ -162,7 +156,7 @@ describe('Party - DeleteById', () => {
     it('T04 - Tenta deletar uma festa sem passar token', async () => {
 
         const test04 = await testServer
-            .delete(`/party/${PartId}`);
+            .delete(`/party/${Id}`);
 
 
         expect(test04.statusCode).toEqual(StatusCodes.UNAUTHORIZED);

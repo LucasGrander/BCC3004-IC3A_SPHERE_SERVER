@@ -7,12 +7,12 @@ describe('Service - GetById', () => {
 
     const email = 'gServiceTestes@mail.com';
     const pass = 'S2nH41';
-    const id = 2123262;
+    const id = 3262;
     let accessToken = '';
 
     const email1 = 'gServiceTas@mail.com';
     const pass1 = 'S2nH41';
-    const id1 = 21232;
+    const id1 = 232;
     let accessToken1 = '';
 
     beforeAll(async () => {
@@ -25,7 +25,7 @@ describe('Service - GetById', () => {
                 name: 'getByIdTest',
                 email: email,
                 password: pass,
-                role: 'Fornecedor'
+                role: 'fornecedor'
             })
 
         const logAcc = await testServer
@@ -57,7 +57,7 @@ describe('Service - GetById', () => {
                 name: 'getByIdTest',
                 email: email1,
                 password: pass1,
-                role: 'Fornecedor'
+                role: 'fornecedor'
             })
 
         const logAcc1 = await testServer
@@ -105,7 +105,7 @@ describe('Service - GetById', () => {
     it('T01 - Tenta buscar um serviço com id inexistente', async () => {
 
         const test01 = await testServer
-            .get(`/service/9919023123`)
+            .get(`/service/9123`)
             .set({ authorization: `Bearer ${accessToken}` })
 
 
@@ -140,7 +140,7 @@ describe('Service - GetById', () => {
     it('T04 - Tenta buscar um serviço de outro organizador', async () => {
 
         const test04 = await testServer
-            .get(`/party/${id1}`)
+            .get(`/service/${id1}`)
             .set({ authorization: `Bearer ${accessToken}` })
 
 

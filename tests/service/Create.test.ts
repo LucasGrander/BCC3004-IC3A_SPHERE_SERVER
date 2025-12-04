@@ -20,7 +20,7 @@ describe('Service - Create', () => {
                 name: 'createTest',
                 email: email,
                 password: pass,
-                role: 'Fornecedor'
+                role: 'fornecedor'
             })
 
         const logAcc = await testServer 
