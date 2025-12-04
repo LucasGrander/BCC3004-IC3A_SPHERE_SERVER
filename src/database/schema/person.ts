@@ -7,10 +7,7 @@ import { z } from "zod";
 import { db } from "..";
 import { PasswordCrypto } from "../../server/shared/services";
 
-export const personRoles = [
-    "Fornecedor",
-    "Organizador"
-] as const;
+export const personRoles = [ "fornecedor", "organizador" ] as const;
 
 export const roles = pgEnum('person_role', personRoles);
 

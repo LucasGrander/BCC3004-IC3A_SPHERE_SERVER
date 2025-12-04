@@ -1,16 +1,20 @@
-import { boolean, foreignKey, integer, pgEnum, pgTable, primaryKey } from "drizzle-orm/pg-core";
+import { boolean, integer, pgEnum, pgTable, primaryKey, text } from "drizzle-orm/pg-core";
 import { service } from "./service";
 import { party } from "./party";
 import { relations } from "drizzle-orm";
 
-export const status = pgEnum('status', ['Pendente', 'Finalizado', 'Cancelado']);
+export const contractStatus = ['Pendente', 'Finalizado', 'Cancelado'] as const 
+
+export const status = pgEnum('status', contractStatus);
 
 export const partyService = pgTable("party_service", {
 	serviceId: integer("service_id").references(() => service.id, {onDelete: 'restrict'}).notNull(),
 	partyId: integer("party_id").references(() => party.id, {onDelete: 'restrict'}).notNull(),
+	serviceName: text('service_name').notNull(),
+	servicePrice: text('service_price').notNull(),
 	amount: integer().notNull(),
 	hasRead: boolean(),
-	status: status().notNull(),
+	status: status('contractStatus').notNull(),
 }, (table) => [
 	primaryKey({ columns: [table.serviceId, table.partyId], name: "party_service_pkey"}),
 ]);

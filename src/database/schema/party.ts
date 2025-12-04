@@ -1,4 +1,4 @@
-import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { boolean, integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { person } from "./person";
 import { and, eq, ilike, or, relations } from "drizzle-orm";
 import { pgEnum } from "drizzle-orm/pg-core";
@@ -8,14 +8,36 @@ import z from "zod";
 import { db } from "..";
 
 export const partyTypes = [
-
-    "pool_party",
-    "eletronica",
-    "aniversario",
-    "cha_revelacao",
-    "confraternizacao",
-    "formatura",
-    "casamento",
+    "Pool Party",
+    "Eletrônica",
+    "Chá Revelação",
+    "Confraternização",
+    "Formatura",
+    "Casamento",
+    "Aniversário",
+    "Festa Infantil",
+    "Debutante",
+    "Jantar de Gala",
+    "Baile de Máscaras",
+    "Festival de Música",
+    "Karaokê",
+    "Festa Fantasia",
+    "Noite de Jogos",
+    "Churrasco",
+    "Luau",
+    "Festa Temática",
+    "Festa Junina",
+    "Réveillon",
+    "Natal",
+    "Halloween",
+    "Festa Sertaneja",
+    "Festa Rock",
+    "Festa Samba",
+    "Sunset",
+    "Evento Empresarial",
+    "Batizado",
+    "Festa Romântica",
+    "Festa Universitária"
 
 ] as const;
 
@@ -31,6 +53,7 @@ export const party = pgTable("party", {
     street: text('address_street').notNull(),
     number: text('address_number').notNull(),
     complement: text('address_complement'),
+    isDeleted: boolean().default(false),
     neighborhood: text('address_neighborhood').notNull(),
     city: text('address_city').notNull(),
     type: partyType('party_type').notNull(),
@@ -92,7 +115,7 @@ export const bodyCreateSchema = createInsertSchema(party)
         neighborhood: z.string().min(5, "Nome do Bairro muito curto!"),
         city: z.string().min(5, "Nome da Cidade muito curto"),
         type: z.enum(partyTypes, "Categoria de Festa inválida!"),
-        person_id: z.number().gt(0, "Id de pessoa inválido!"),
+        person_id: z.number("O id do Organizador deve ser um número").gt(0, "Id de pessoa inválido!").optional(),
     });
 
 export const bodyUpdateSchema = createUpdateSchema(party)
@@ -116,7 +139,7 @@ export const bodyUpdateSchema = createUpdateSchema(party)
         type: z.enum(partyTypes, "Categoria de Festa inválida!").optional(),
     }).strict();
 
-export const selectPartySchema = createSelectSchema(party);
+export const selectPartySchema = createSelectSchema(party).omit({ isDeleted: true });
 
 export const paramsSchema = z.object({
 
@@ -197,7 +220,12 @@ export const updatePartyById = async (id: number, updatedParty: UpdateParty): Pr
         const result = await db
             .update(party)
             .set(updatedParty)
-            .where(eq(party.id, id))
+            .where(
+                and(
+                    eq(party.isDeleted, false),
+                    eq(party.id, id)
+                )
+            )
             .returning({
                 id: party.id,
                 name: party.name,
@@ -253,14 +281,11 @@ export const getAllPersonPartyById = async (id: number, page: number, limit: num
             .from(party)
             .where(
                 and(
+                    eq(party.isDeleted, false),
                     eq(party.person_id, id),
-                    or(
-                        filter ? ilike(party.name, `%${filter}%`) : undefined,
-                        filter ? ilike(party.city, `%${filter}%`) : undefined
-                    )
-                    
-                )
-                
+                    filter ? ilike(party.name, `%${filter}%`) : undefined,
+                    // or()
+                )        
             )
             .limit(limit)
             .offset(offset);
@@ -302,7 +327,13 @@ export const getPartyById = async (id: number): Promise<SelectParty | Error> => 
                 city: party.city,
                 type: party.type,
                 person_id: party.person_id
-            }).from(party).where(eq(party.id, id));
+            })
+            .from(party)
+            .where(
+                and(
+                    eq(party.isDeleted, false),
+                    eq(party.id, id)
+                ));
 
         const foundParty = result[0];
 
@@ -328,7 +359,45 @@ export const getPartyById = async (id: number): Promise<SelectParty | Error> => 
 
 
 }
+
 export const deletePartyById = async (id: number): Promise<void | Error> => {
+
+    try {
+
+        const cnt = await db.$count(party, eq(party.id, id));
+
+        if (cnt === 0) {
+             return new Error('Festa não encontrada.');
+        }
+
+        const result = await db
+            .update(party)
+            .set({ isDeleted: true })
+            .where(eq(party.id, id))
+            .returning({
+                deletedId: party.id
+            });
+            
+        if (result) return;
+
+        return new Error('Festa não encontrada');
+
+    } catch (e: any) {
+
+        console.log('Erro no deletePartyById: ',e);
+
+      //  const code = e.code || e.cause?.code
+
+      if(e instanceof Error){
+        return e;
+      }
+
+        return new Error('Erro ao deletar a festa');
+    }
+
+}
+
+export const deleteHPartyById = async (id: number): Promise<void | Error> => {
 
     try {
 

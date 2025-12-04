@@ -1,4 +1,4 @@
-import { decimal, integer, pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { boolean, decimal, integer, pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
 import { person } from "./person";
 import { and, eq, ilike, relations } from "drizzle-orm";
 import { partyService } from "./partyService";
@@ -9,16 +9,43 @@ import { db } from "..";
 
 export const serviceTypes = [
 
+    // Alimentação
     'Buffet',
     'Bebidas',
+    'Barman',
+    'Confeitaria',  // Bolos e doces finos (geralmente separado do buffet)
+    'Churrasqueiro',     
+
+    // Estrutura e Ambiente
+    'Decoração',        // Flores, arranjos, cenografia
     'Mobília',
-    'Entreterimento',
     'Iluminação',
-    'Infra',
-    'Fotografia'
+    'Sonorização',      // Equipamentos de som (diferente dos artistas)
+    'Infra',            // Palcos, tendas, geradores, pisos
+    'Brinquedos',       // Cama elástica, Infláveis
+
+    // Diversão e Mídia
+    'Entretenimento',   // DJs, Bandas, Personagens
+    'Recreação',        // Monitores infantis, brinquedos
+    'Fotografia',
+    'Filmagem',         // Vídeo, Drone
+
+    // Organização e Apoio
+    'Assessoria',       // Cerimonialistas e organizadores
+    'Segurança',
+    'Limpeza',          // Equipe de limpeza pós/pré evento
+    'Staff',            // Garçons extras, recepcionistas, valets
+    'Garçons',
+    'Entreterimento',
+
+    // Detalhes
+    'Papelaria',        // Convites, menus
+    'Lembrancinhas',    // Brindes personalizados
+    'Beleza',           // Maquiagem e Cabelo (dia da noiva/debutante)
+    'Aluguel de Trajes', // Vestidos, Ternos
+    'Transporte'        // Limousines, vans para convidados
 
 ] as const;
-
 
 export const serviceType = pgEnum('service_type', serviceTypes);
 
@@ -29,6 +56,7 @@ export const service = pgTable("service", {
     description: text('description').notNull(),
     type: serviceType('service_type').notNull(),
     price: decimal('price').notNull(),
+    isDeleted: boolean().default(false),
     person_id: integer('person_id').references(() => person.id, { onDelete: 'cascade' }).notNull()
 
 });
@@ -46,14 +74,15 @@ export const bodyCreateSchema = createInsertSchema(service)
         description: z.string("A descrição deve ser um texto!").min(10, "Descrição muito curta!").max(40, "Descrição muito longa!"),
         type: z.enum(serviceTypes, "Categoria de Serviço inválida!"),
         price: z.string("O preço é obrigatório").regex(/^\d+(\.\d{2})?$/, "O preço deve ter ou 2 casas decimais ou nenhuma (ex: 10.99)").refine((val) => parseFloat(val) > 0, {
-        message: "O valor deve ser maior que zero (ex: 0.50)"
+            message: "O valor deve ser maior que zero (ex: 0.50)"
         })
     })
 
 export const bodyUpdateSchema = createUpdateSchema(service)
     .omit({
         id: true,
-        person_id: true
+        person_id: true,
+        isDeleted: true
     })
     .extend({
         name: z.string("O nome deve ser um texto!").min(5, "Nome muito curto!").max(20, "Nome muito longo!").optional(),
@@ -61,8 +90,8 @@ export const bodyUpdateSchema = createUpdateSchema(service)
         type: z.enum(serviceTypes, "Categoria de Serviço inválida!").optional(),
         price: z.string("O preço é obrigatório")
             .regex(/^\d+(\.\d{2})?$/, "O preço deve ter até 2 casas decimais (ex: 10.99)").refine((val) => parseFloat(val) > 0, {
-        message: "O valor deve ser maior que zero (ex: 0.50)"
-        }).optional()
+                message: "O valor deve ser maior que zero (ex: 0.50)"
+            }).optional()
     }).strict();
 
 export const selectServiceSchema = createSelectSchema(service);
@@ -134,7 +163,12 @@ export const updateServiceById = async (id: number, updatedService: UpdatedServi
         const result = await db
             .update(service)
             .set(updatedService)
-            .where(eq(service.id, id))
+            .where(
+                and(
+                    eq(service.isDeleted, false),
+                    eq(service.id, id)
+                )
+            )
             .returning();
 
         const updService = result[0];
@@ -177,10 +211,10 @@ export const getAllPersonServiceById = async (id: number, page: number, limit: n
             .from(service)
             .where(
                 and(
+                    eq(service.isDeleted, false),
                     eq(service.person_id, id),
                     filter ? ilike(service.name, `%${filter}%`) : undefined
                 )
-
             )
             .limit(limit)
             .offset(offset);
@@ -216,7 +250,13 @@ export const getAllServices = async (page: number, limit: number, filter?: strin
             .select()
             .from(service)
             .limit(limit)
-            .where(filter ? ilike(service.name, `%${filter}%`) : undefined)
+            .where(
+                and(
+                    eq(service.isDeleted, false),
+                    filter ? ilike(service.name, `%${filter}%`) : undefined,
+                    // or()
+                )
+            )
             .offset(offset);
 
         if (!result) {
@@ -247,7 +287,12 @@ export const getServiceById = async (id: number): Promise<SelectService | Error>
         const result = await db
             .select()
             .from(service)
-            .where(eq(service.id, id))
+            .where(
+                and(
+                    eq(service.isDeleted, false),
+                    eq(service.id, id)
+                )
+            )
 
         const foundService = result[0];
 
@@ -281,6 +326,41 @@ export const deleteServiceById = async (id: number): Promise<void | Error> => {
         }
 
         const result = await db
+            .update(service)
+            .set({ isDeleted: true })
+            .where(eq(service.id, id))
+            .returning({
+                deletedId: service.id
+            });
+
+        if (result) return;
+
+        return new Error('Service não encontrada');
+
+    } catch (e: any) {
+
+        console.log("Erro no deleteServiceById: ", e);
+
+        if (e instanceof Error) {
+            return e;
+        }
+
+        return new Error("Erro desconhecido ao deletar Serviço.");
+
+    }
+}
+
+export const deleteHServiceById = async (id: number): Promise<void | Error> => {
+
+    try {
+
+        const cnt = await db.$count(service, eq(service.id, id));
+
+        if (cnt === 0) {
+            return new Error('Serviço não encontrado.');
+        }
+
+        const result = await db
             .delete(service)
             .where(eq(service.id, id))
             .returning({
@@ -295,7 +375,7 @@ export const deleteServiceById = async (id: number): Promise<void | Error> => {
 
         console.log("Erro no deleteServiceById: ", e);
 
-        if(e instanceof Error) { 
+        if (e instanceof Error) {
             return e;
         }
 
