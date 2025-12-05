@@ -75,7 +75,8 @@ export const bodyCreateSchema = createInsertSchema(service)
         type: z.enum(serviceTypes, "Categoria de Serviço inválida!"),
         price: z.string("O preço é obrigatório").regex(/^\d+(\.\d{2})?$/, "O preço deve ter ou 2 casas decimais ou nenhuma (ex: 10.99)").refine((val) => parseFloat(val) > 0, {
             message: "O valor deve ser maior que zero (ex: 0.50)"
-        })
+        }),
+        person_id: z.number("O id do Fornecedor deve ser um número").gt(0, "Id de pessoa inválido!").optional(),
     })
 
 export const bodyUpdateSchema = createUpdateSchema(service)
@@ -189,7 +190,7 @@ export const updateServiceById = async (id: number, updatedService: UpdatedServi
             return e;
         }
 
-        return new Error('Erro desconhecido ao criar serviço');
+        return new Error('Erro desconhecido ao atualizar serviço');
 
     }
 }
