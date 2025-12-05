@@ -111,9 +111,9 @@ export const bodyCreateSchema = createInsertSchema(party)
 
         street: z.string().min(4, "Nome da rua muito curto! Ex: Rua ..."),
         number: z.string().min(1, "Número muito curto!"),
-        complement: z.string().min(5, "Complemento muito curto!"), //.max(..., "Complemento longo demais!")
-        neighborhood: z.string().min(5, "Nome do Bairro muito curto!"),
-        city: z.string().min(5, "Nome da Cidade muito curto"),
+        complement: z.string().min(1, "Complemento muito curto!"), //.max(..., "Complemento longo demais!")
+        neighborhood: z.string().min(4, "Nome do Bairro muito curto!"),
+        city: z.string().min(4, "Nome da Cidade muito curto"),
         type: z.enum(partyTypes, "Categoria de Festa inválida!"),
         person_id: z.number("O id do Organizador deve ser um número").gt(0, "Id de pessoa inválido!").optional(),
     });
@@ -133,9 +133,9 @@ export const bodyUpdateSchema = createUpdateSchema(party)
         date: dateValidationSchema.optional(),
         street: z.string().min(4, "Nome da rua muito curto! Ex: Rua ...").optional(),
         number: z.string().min(1, "Número muito curto!").optional(),
-        complement: z.string().min(5, "Complemento muito curto!").optional(), //.max(..., "Complemento longo demais!")
-        neighborhood: z.string().min(5, "Nome do Bairro muito curto!").optional(),
-        city: z.string().min(5, "Nome da Cidade muito curto").optional(),
+        complement: z.string().min(1, "Complemento muito curto!").optional(), //.max(..., "Complemento longo demais!")
+        neighborhood: z.string().min(4, "Nome do Bairro muito curto!").optional(),
+        city: z.string().min(4, "Nome da Cidade muito curto").optional(),
         type: z.enum(partyTypes, "Categoria de Festa inválida!").optional(),
     }).strict();
 

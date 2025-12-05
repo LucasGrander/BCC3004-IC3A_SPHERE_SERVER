@@ -70,8 +70,8 @@ export const serviceRelations = relations(service, ({ one, many }) => ({
 
 export const bodyCreateSchema = createInsertSchema(service)
     .extend({
-        name: z.string("O nome deve ser um texto!").min(5, "Nome muito curto!").max(25, "Nome muito longo!"),
-        description: z.string("A descrição deve ser um texto!").min(10, "Descrição muito curta!").max(40, "Descrição muito longa!"),
+        name: z.string("O nome deve ser um texto!").min(5, "Nome muito curto!").max(70, "Nome muito longo!"),
+        description: z.string("A descrição deve ser um texto!").min(10, "Descrição muito curta!").max(300, "Descrição muito longa!"),
         type: z.enum(serviceTypes, "Categoria de Serviço inválida!"),
         price: z.string("O preço é obrigatório").regex(/^\d+(\.\d{2})?$/, "O preço deve ter ou 2 casas decimais ou nenhuma (ex: 10.99)").refine((val) => parseFloat(val) > 0, {
             message: "O valor deve ser maior que zero (ex: 0.50)"
