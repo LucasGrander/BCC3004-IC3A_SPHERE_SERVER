@@ -1,4 +1,5 @@
 import Express  from 'express';
+import cors  from 'cors';
 import compression from 'compression';
 import http from 'http';
 import bodyParser from 'body-parser';
@@ -12,6 +13,7 @@ const app = Express();
 // app.use(cors({ credentials: true }));
 // app.use(cookieParser());
 
+app.use(cors());
 app.use(compression());
 app.use(bodyParser.json());
 app.use('/', router)
