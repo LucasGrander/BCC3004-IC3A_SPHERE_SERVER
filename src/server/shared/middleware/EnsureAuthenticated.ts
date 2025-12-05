@@ -35,6 +35,7 @@ export const ensureAuthenticated: RequestHandler = async (req, res, next) => {
 
     req.headers.personId = jwtData.uid.toString();
     req.headers.personRole = jwtData.role.toString();
+    req.headers.personName = jwtData.name.toString();
 
     return next();
 

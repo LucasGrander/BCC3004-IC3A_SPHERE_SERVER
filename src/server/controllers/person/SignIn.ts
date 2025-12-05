@@ -32,7 +32,7 @@ export const signIn = async (req: Request<{}, {}, SignIn>, res: Response) => {
 
     } else {
 
-        const accessToken = JWTService.signT({ uid: person.id, role: person.role });
+        const accessToken = JWTService.signT({ uid: person.id, role: person.role, name: person.name });
 
         if (accessToken === 'JWT_SECRET_NOT_FOUND') {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -45,6 +45,7 @@ export const signIn = async (req: Request<{}, {}, SignIn>, res: Response) => {
         return res.status(StatusCodes.OK).json({ 
 
             id: person.id,
+            name: person.name,
             role: person.role,
             token: accessToken
 

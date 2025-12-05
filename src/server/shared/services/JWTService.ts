@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 
 interface IJwtData { 
     uid: number;
+    name: string;
     role: string;
 }
 
