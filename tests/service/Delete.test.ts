@@ -26,7 +26,7 @@ describe('Service - DeleteById', () => {
                 name: 'TestDel',
                 email: email,
                 password: pass,
-                role: 'Fornecedor'
+                role: 'fornecedor'
             })
 
         const logAcc1 = await testServer
@@ -58,7 +58,7 @@ describe('Service - DeleteById', () => {
                 name: 'TestDel',
                 email: email2,
                 password: pass2,
-                role: 'Fornecedor'
+                role: 'fornecedor'
 
             })
 
@@ -109,7 +109,7 @@ describe('Service - DeleteById', () => {
     it('T01 - Tenta deletar uma serviço inexistente', async () => {
 
         const test01 = await testServer
-            .delete('/service/99999')
+            .delete('/service/999')
             .set({ authorization: `Bearer ${accessToken}` });
 
 
@@ -144,10 +144,10 @@ describe('Service - DeleteById', () => {
 
     });
 
-    it('T04 - Tenta deletar uma festa sem passar token', async () => {
+    it('T04 - Tenta deletar um serviço, sem estar autenticado', async () => {
 
         const test04 = await testServer
-            .delete(`/party/${id}`);
+            .delete(`/service/${id}`);
 
 
         expect(test04.statusCode).toEqual(StatusCodes.UNAUTHORIZED);

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
-import { PartyController, PersonController, ServiceController } from "../controllers";
+import { ContractController, PartyController, PersonController, ServiceController } from "../controllers";
 import { ensureAuthenticated } from "../shared/middleware";
 
 
@@ -22,6 +22,12 @@ router.put('/service/:id', ensureAuthenticated, ServiceController.updateByIdVali
 router.get('/service/all', ensureAuthenticated, ServiceController.getAllValidator, ServiceController.getAll);
 router.get('/service/:id', ensureAuthenticated, ServiceController.getByIdValidator, ServiceController.getById);
 router.delete('/service/:id', ensureAuthenticated, ServiceController.deleteByIdValidator, ServiceController.deleteById);
+
+router.post('/contract', ensureAuthenticated, ContractController.createValidator, ContractController.create);
+router.put('/contract/:id', ensureAuthenticated, ContractController.updateByIdValidator, ContractController.updateById);
+router.get('/party/contracts/:id', ensureAuthenticated, ContractController.getAllValidator, ContractController.getAllPartyServ);
+router.get('/contracts', ensureAuthenticated, ContractController.getAllContract);
+
 
 router.post('/signup', PersonController.signUpValidator, PersonController.signUp);
 router.post('/signin', PersonController.signInValidator, PersonController.signIn);

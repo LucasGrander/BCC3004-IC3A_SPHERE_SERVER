@@ -23,7 +23,7 @@ describe('Person - SignUp', () => {
                 email: email,
                 password: 'S2nH41',
                 phone: '(99)9999-99999',
-                role: 'Organizador'
+                role: 'organizador'
             })
 
         expect(test00.statusCode).toEqual(StatusCodes.CREATED);
@@ -40,7 +40,7 @@ describe('Person - SignUp', () => {
                 email: 'T@m.c',
                 password: 'S2',
                 phone: '(99)999',
-                role: 'Organizador'
+                role: 'organizador'
             })
 
         expect(test01.statusCode).toEqual(StatusCodes.BAD_REQUEST);
@@ -60,7 +60,7 @@ describe('Person - SignUp', () => {
                 email: 'TesteTesteTesteTesteTesteTeste@mail.com',
                 password: 'S2nH4S2nH4S2nH4S2nH4S2nH4S2nH4S2nH4S2nH4S2nH4S2nH41',
                 phone: '(99)9999-999999999999999',
-                role: 'Organizador'
+                role: 'organizador'
             })
 
         expect(test02.statusCode).toEqual(StatusCodes.BAD_REQUEST);
@@ -97,7 +97,7 @@ describe('Person - SignUp', () => {
                 email: 'Teste04@mail.com',
                 password: 'S2nH41',
                 phone: '(99)9999-99999',
-                role: 'Organizador'
+                role: 'organizador'
             })
 
         expect(test04.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);
@@ -114,7 +114,7 @@ describe('Person - SignUp', () => {
                 email: email,
                 password: 'S2nH41',
                 phone: '(99)9999-99999',
-                role: 'Organizador'
+                role: 'organizador'
             })
 
         expect(test04.statusCode).toEqual(StatusCodes.INTERNAL_SERVER_ERROR);

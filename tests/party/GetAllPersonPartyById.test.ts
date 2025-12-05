@@ -7,8 +7,7 @@ describe('Party - GetAllPersonPartyById', () => {
 
     const email = 'gPrtyTests@mail.com';
     const pass = 'S2nH41';
-    const PersId = 2262;
-    let PartId = '';
+    const Id = 2262;
     let accessToken = '';
 
     beforeAll(async () => {
@@ -17,11 +16,11 @@ describe('Party - GetAllPersonPartyById', () => {
             .post('/signup')
             .send({
 
-                id: PersId,
+                id: Id,
                 name: 'getAllTest',
                 email: email,
                 password: pass,
-                role: 'Organizador'
+                role: 'organizador'
             })
 
         const logAcc = await testServer
@@ -37,6 +36,7 @@ describe('Party - GetAllPersonPartyById', () => {
             .post('/party')
             .set({ authorization: `Bearer ${accessToken}` })
             .send({
+                id: Id,
                 name: "Teste00",
                 date: "2030-12-31T13:13",
                 street: "Rua T00",
@@ -44,22 +44,17 @@ describe('Party - GetAllPersonPartyById', () => {
                 complement: "Mercado T00",
                 neighborhood: "Gueto T00",
                 city: "T00wn",
-                type: "formatura",
-                person_id: PersId
+                type: "Formatura",
+                person_id: Id
 
             });
 
-        PartId = Party.body.id;
-
     })
 
-
     afterAll(async () => {
-        const deleteCreation = await testServer
-            .delete(`/party/${PartId}`)
-            .set({ authorization: `Bearer ${accessToken}` });
 
-        const deleteAcc = await deletePersonById(PersId)
+        const deleteAcc = await deletePersonById(Id)
+
     })
 
 

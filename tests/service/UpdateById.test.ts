@@ -7,12 +7,12 @@ describe('Service - UpdateById', () => {
 
     const email = 'uServiceTests@mail.com';
     const pass = 'S2nH41';
-    const id = 22222;
+    const id = 22;
     let accessToken = '';
 
     const email1 = 'gServiceTas@mail.com';
     const pass1 = 'S2nH41';
-    const id1 = 212818;
+    const id1 = 218;
     let accessToken1 = '';
 
     beforeAll(async () => {
@@ -25,7 +25,7 @@ describe('Service - UpdateById', () => {
                 name: 'updateTest',
                 email: email,
                 password: pass,
-                role: 'Fornecedor'
+                role: 'fornecedor'
             })
 
         const logAcc = await testServer
@@ -58,7 +58,7 @@ describe('Service - UpdateById', () => {
                 name: 'getByIdTest',
                 email: email1,
                 password: pass1,
-                role: 'Fornecedor'
+                role: 'fornecedor'
             })
 
         const logAcc1 = await testServer
@@ -188,7 +188,7 @@ describe('Service - UpdateById', () => {
     it('T05 - Tenta atualizar um serviço inexistente', async () => {
 
         const test05 = await testServer
-            .put('/service/999999')
+            .put('/service/2019')
             .set({ authorization: `Bearer ${accessToken}` })
             .send({
                 name: "Balões do T04",

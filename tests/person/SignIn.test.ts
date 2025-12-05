@@ -17,13 +17,15 @@ describe('Person - SignIn', () => {
                 name: 'signInTest',
                 email: email,
                 password: pass,
-                role: 'Organizador'
+                role: 'organizador'
             })
  
     })
 
     afterAll( async() => {
+
         const deleteAcc = await deletePersonById(id);
+
     })
 
     it('T00 - Tenta entrar em uma conta (existente)', async() => {

@@ -1,12 +1,13 @@
 import { type Request, type RequestHandler, type Response } from "express";
-import { bodyUpdateSchema, getPartyById, paramsSchema, updatePartyById, type UpdateParty } from "../../../database/schema/party";
+import { getAllPartyServices, paramsSchema } from "../../../database/schema/partyService";
 import { StatusCodes } from "http-status-codes";
 import { validate } from "../../shared/middleware/Validation";
+import { getPartyById } from "../../../database/schema/party";
 
 
-export const updateByIdValidator: RequestHandler = validate({ params: paramsSchema, body: bodyUpdateSchema });
+export const getAllValidator: RequestHandler = validate({ params: paramsSchema });
 
-export const updateById = async (req: Request<{}, {}, UpdateParty>, res: Response) => {
+export const getAllPartyServ = async (req: Request, res: Response) => {
 
     if (req.headers.personRole !== 'organizador') {
         return res.status(StatusCodes.FORBIDDEN).json({
@@ -16,33 +17,38 @@ export const updateById = async (req: Request<{}, {}, UpdateParty>, res: Respons
         });
     }
 
-    const verifyOwnr = await getPartyById(req.validatedParams.id);
+    // const verifyOwnr = await getOrganizer(req.validatedParams.id)
+
+    const verifyOwnr = await getPartyById(req.validatedParams.id)
 
     if (verifyOwnr instanceof Error) {
+
         return res.status(StatusCodes.NOT_FOUND).json({
             errors: {
                 default: verifyOwnr.message
             }
         });
+
     } else if (req.headers.personId !== verifyOwnr.person_id.toString()) {
+
         return res.status(StatusCodes.FORBIDDEN).json({
             errors: {
-                default: "Você só pode atualizar suas festas."
+                default: "Você só pode buscar contratos de suas festas."
             }
         });
 
     }
 
-    const result = await updatePartyById(req.validatedParams.id, req.validatedBody);
+    const result = await getAllPartyServices(req.validatedParams.id);
 
     if (result instanceof Error) {
-        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        return res.status(StatusCodes.NOT_FOUND).json({
             errors: {
                 default: result.message
             }
         });
     }
 
-    return res.status(StatusCodes.NO_CONTENT).json(result);
+    return res.status(StatusCodes.OK).json(result);
 
 }

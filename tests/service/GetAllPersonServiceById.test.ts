@@ -20,7 +20,7 @@ describe('Service - GetAllPersonServiceById', () => {
                 name: 'getAllTest',
                 email: email,
                 password: pass,
-                role: 'Fornecedor'
+                role: 'fornecedor'
             })
 
         const logAcc = await testServer
