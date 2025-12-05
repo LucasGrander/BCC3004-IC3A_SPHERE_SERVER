@@ -1,3 +1,4 @@
 export * from './party';
 export * from './person';
 export * from './service';
+export * from './contract';
