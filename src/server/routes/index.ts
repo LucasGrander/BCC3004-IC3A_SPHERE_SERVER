@@ -15,6 +15,7 @@ router.post('/party', ensureAuthenticated, PartyController.createValidator, Part
 router.put('/party/:id', ensureAuthenticated, PartyController.updateByIdValidator, PartyController.updateById);
 router.get('/party/all', ensureAuthenticated, PartyController.getAllValidator, PartyController.getAll);
 router.get('/party/:id', ensureAuthenticated, PartyController.getByIdValidator, PartyController.getById);
+router.get('/services', ensureAuthenticated, ServiceController.getAllAll);
 router.delete('/party/:id', ensureAuthenticated, PartyController.deleteByIdValidator, PartyController.deleteById);
 
 router.post('/service', ensureAuthenticated, ServiceController.createValidator, ServiceController.create);

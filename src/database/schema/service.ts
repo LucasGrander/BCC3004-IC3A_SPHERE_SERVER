@@ -1,6 +1,6 @@
 import { boolean, decimal, integer, pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
 import { person } from "./person";
-import { and, eq, ilike, relations } from "drizzle-orm";
+import { and, asc, eq, ilike, relations } from "drizzle-orm";
 import { partyService } from "./partyService";
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
@@ -14,7 +14,7 @@ export const serviceTypes = [
     'Bebidas',
     'Barman',
     'Confeitaria',  // Bolos e doces finos (geralmente separado do buffet)
-    'Churrasqueiro',     
+    'Churrasqueiro',
 
     // Estrutura e Ambiente
     'Decoração',        // Flores, arranjos, cenografia
@@ -277,6 +277,47 @@ export const getAllServices = async (page: number, limit: number, filter?: strin
         }
 
         return new Error('Erro desconhecido ao buscar todos os serviços');
+
+    }
+}
+
+export const getAServices = async () => {
+
+    try {
+
+        const result = await db
+            .select({
+
+                companyName: person.name,
+                companyId: service.person_id,
+                serviceId: service.id,
+                serviceName: service.name,
+                serviceDesc: service.description,
+                servicePrice: service.price,
+                serviceType: service.type
+            })
+            .from(service)
+            .innerJoin(person, eq(service.person_id, person.id))
+            .where(eq(service.isDeleted, false))
+            .orderBy(asc(service.name))
+
+        if(!result) { 
+            return new Error("Erro ao buscar todos os serviços")
+        }
+
+        return result;
+
+    } catch (e: any) {
+
+        console.log("Erro no getAServices:", e);
+
+        //  const code = e.code || e.cause?.code;
+
+        if (e instanceof Error) {
+            return e;
+        }
+
+        return new Error('Erro desconhecido ao buscar todos os serviços.');
 
     }
 }
