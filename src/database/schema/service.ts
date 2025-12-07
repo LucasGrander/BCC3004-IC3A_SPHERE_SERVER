@@ -86,8 +86,8 @@ export const bodyUpdateSchema = createUpdateSchema(service)
         isDeleted: true
     })
     .extend({
-        name: z.string("O nome deve ser um texto!").min(5, "Nome muito curto!").max(20, "Nome muito longo!").optional(),
-        description: z.string("A descrição deve ser um texto!").min(10, "Descrição muito curta!").max(40, "Descrição muito longa!").optional(),
+        name: z.string("O nome deve ser um texto!").min(5, "Nome muito curto!").max(70, "Nome muito longo!").optional(),
+        description: z.string("A descrição deve ser um texto!").min(10, "Descrição muito curta!").max(300, "Descrição muito longa!").optional(),
         type: z.enum(serviceTypes, "Categoria de Serviço inválida!").optional(),
         price: z.string("O preço é obrigatório")
             .regex(/^\d+(\.\d{2})?$/, "O preço deve ter até 2 casas decimais (ex: 10.99)").refine((val) => parseFloat(val) > 0, {
