@@ -4,6 +4,7 @@ import compression from 'compression';
 import http from 'http';
 import bodyParser from 'body-parser';
 import { router } from './routes';
+import "../observers/InAppNotificationObserver";
 
 // import cors from 'cors';
 // import cookieParser from 'cookie-parser';

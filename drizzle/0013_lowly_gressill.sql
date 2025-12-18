@@ -1,0 +1,1 @@
+ALTER TABLE "notification" ALTER COLUMN "canceledIn" SET DATA TYPE text;

@@ -18,8 +18,6 @@ export const partyService = pgTable("party_service", {
 	partyId: integer("party_id").references(() => party.id, { onDelete: 'restrict' }).notNull(),
 	amount: integer().notNull(),
 	total: text('total').notNull(),
-	hasRead: boolean().default(false),
-	hasDeliveredNotification: boolean().default(false),
 	status: status('contractStatus').notNull().default("Pendente"),
 });
 
@@ -32,33 +30,29 @@ export const partyServiceRelations = relations(partyService, ({ one }) => ({
 
 
 export const bodyCreateSchema = createInsertSchema(partyService)
-	.omit({
-		hasRead: true,
-		hasDeliveredNotification: true,
-	})
 	.extend({
+
 		serviceId: z.number("O serviceId deve ser um número"),
 		partyId: z.number("O serviceId deve ser um número"),
 		amount: z.number("Quantidate precisa ser um número").gt(0, "A quantidade deve ser maior que 0"),
 		total: z.string().min(0, "O Total não pode ser nulo.")
+
 	})
 
 export const bodyUpdateSchema = z.object(partyService)
 	.pick({
-		status: true,
-		hasRead: true,
-		hasDeliveredNotification: true
+
+		amount: true,
+		total: true,
+
 	})
 	.extend({
-		hasDeliveredNotification: z.boolean("Deve ser um booleano").optional(),
-		hasRead: z.boolean("Deve ser um booleano").optional(),
-		status: z.enum(contractStatus, "Status inválido").optional()
+
+		amount: z.number("Quantidate precisa ser um número").gt(0, "A quantidade deve ser maior que 0").optional(),
+		total: z.string().min(0, "O Total não pode ser nulo.").optional()
+
 	})
 
-// export const selectContractSchema = z.object(partyService)
-// 	.pick({ 
-
-// 	})
 
 export const paramsSchema = z.object({
 
@@ -107,14 +101,22 @@ export const createContract = async (newContract: NewContract) => {
 	}
 }
 
-export const updateContractById = async (id: number, updatedContract: UpdatedContract) => {
+export const updateContractById = async (contractId: number, updatedContract: UpdatedContract) => {
 
 	try {
+
+		const checkStatus = await db.select({ status: partyService.status }).from(partyService).where(eq(partyService.id, contractId)).limit(1)
+
+		const ck = checkStatus[0];
+
+		if (ck && ck.status !== "Pendente"){
+			return new Error(`Este Contrato já está ${ck.status}, realize uma nova contratação!`, {cause: "CONTRACT_IS_DONE"})
+		}
 
 		const result = await db
 			.update(partyService)
 			.set(updatedContract)
-			.where(eq(partyService.id, id))
+			.where(eq(partyService.id, contractId))
 			.returning()
 
 		const contractUpdated = result[0]
@@ -140,6 +142,50 @@ export const updateContractById = async (id: number, updatedContract: UpdatedCon
 	}
 }
 
+export const updateContractStatus = async (contractId: number, newStatus: "Finalizado" | "Cancelado") => {
+
+    try {
+
+		const checkStatus = await db.select({ status: partyService.status }).from(partyService).where(eq(partyService.id, contractId)).limit(1)
+
+		const ck = checkStatus[0];
+
+		if (ck && ck.status !== "Pendente"){
+			return new Error(`Este Contrato já está ${ck.status}`, {cause: "CONTRACT_IS_DONE"})
+		}
+
+        const result = await db
+            .update(partyService)
+            .set({ status: newStatus })
+			.where(
+				eq(partyService.id, contractId)
+			)
+			.returning({ 
+				contractId: partyService.id,
+				newStatus: partyService.status
+			})
+		
+		const updatedStatus = result[0]
+
+		if(!updatedStatus) { 
+			return new Error('Contrato não encontrado', { cause: "NOT_FOUND" });
+		}
+
+		return updatedStatus;
+        
+    } catch (e) {
+        
+		console.log("Erro no updateContractStatus:", e);
+
+        if (e instanceof Error) {
+            return e;
+        }
+
+        return new Error('Erro desconhecido ao atualizar status do contrato');
+
+    }
+}
+
 export const getAllContracts = async (Fid: number) => {
 
 	try {
@@ -148,8 +194,10 @@ export const getAllContracts = async (Fid: number) => {
 			.select({
 
 				contractId: partyService.id,
+				contractStatus: partyService.status,
 				amount: partyService.amount,
 				serviceName: service.name,
+				serviceType: service.type,
 				partyOwner: person.name,
 				partyOwnPhone: person.phone,
 				partyDate: party.date,
@@ -164,11 +212,9 @@ export const getAllContracts = async (Fid: number) => {
 			.innerJoin(service, eq(partyService.serviceId, service.id))
 			.innerJoin(person, eq(party.person_id, person.id))
 			.where(
-				and(
-					eq(service.person_id, Fid)
-				)
+				eq(service.person_id, Fid)
 			)
-			.orderBy(desc(party.date)); 
+			.orderBy(desc(party.date));
 
 		if (!result) {
 			return new Error("Erro ao buscar todos seus contratos.")
@@ -199,6 +245,8 @@ export const getAllPartyServices = async (Partyid: number) => {
 			.select({
 
 				contractId: partyService.id,
+				serviceId: service.id,
+				partyId: party.id,
 				amount: partyService.amount,
 				status: partyService.status,
 				serviceName: service.name,
@@ -240,7 +288,6 @@ export const getAllPartyServices = async (Partyid: number) => {
 	}
 }
 
-
 export const getOrganizer = async (contractId: number) => {
 
 	try {
@@ -249,16 +296,14 @@ export const getOrganizer = async (contractId: number) => {
 			.select({
 				organizerId: party.person_id
 			})
-			.from(partyService) 
-			.innerJoin(party, eq(party.id, partyService.partyId)) 
-			.where(eq(partyService.id, contractId)) 
+			.from(partyService)
+			.innerJoin(party, eq(party.id, partyService.partyId))
+			.where(eq(partyService.id, contractId))
 			.limit(1);
 
-		const got = result[0]; 
-		
-		console.log(result)
-		
-		if(!got) { 
+		const got = result[0];
+
+		if (!got) {
 			return new Error('Ou tu não é fi du dono ou este contrato não existe')
 		}
 
@@ -287,19 +332,19 @@ export const getFornecer = async (contractId: number) => {
 			.select({
 				fornecerId: service.person_id
 			})
-			.from(partyService) 
-			.innerJoin(service, eq(partyService.serviceId, service.id)) 
-			.where(eq(partyService.id, contractId)) 
+			.from(partyService)
+			.innerJoin(service, eq(partyService.serviceId, service.id))
+			.where(eq(partyService.id, contractId))
 			.limit(1);
 
-		const got = result[0]; 
+		const got = result[0];
 
-		if(!got) { 
+		if (!got) {
 			return new Error('Ou tu não é fidudono ou este contrato não existe')
 		}
 
 		return got;
-		
+
 	} catch (e: any) {
 
 		console.log("Erro no getFornecer:", e);
