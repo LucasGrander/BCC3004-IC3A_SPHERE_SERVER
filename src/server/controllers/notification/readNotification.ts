@@ -3,7 +3,7 @@ import { validate } from "../../shared/middleware";
 import { bodyUpdateSchema, getFornecer, paramsSchema, readNotificationById, type UpdatedNotification } from "../../../database/schema/notification";
 import { StatusCodes } from "http-status-codes";
 
-export const readByIdValidator: RequestHandler = validate({ params: paramsSchema, body: bodyUpdateSchema })
+export const readByIdValidator: RequestHandler = validate({ params: paramsSchema })
 
 export const readNotification = async (req: Request<{}, {}, UpdatedNotification>, res: Response) => {
 
