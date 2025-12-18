@@ -1,5 +1,5 @@
 import { type Request, type RequestHandler, type Response } from "express";
-import { getServiceById, paramsSchema, type Params } from "../../../database/schema/service";
+import { getServiceById, paramsSchema } from "../../../database/schema/service";
 import { StatusCodes } from "http-status-codes";
 import { validate } from "../../shared/middleware";
 

@@ -2,12 +2,15 @@ import { type Request, type RequestHandler, type Response } from "express";
 import { getAllPartyServices, paramsSchema } from "../../../database/schema/partyService";
 import { StatusCodes } from "http-status-codes";
 import { validate } from "../../shared/middleware/Validation";
-import { getPartyById } from "../../../database/schema/party";
+
+import { PartyRepository } from "../../../repositories/PartyRepository";
 
 
 export const getAllValidator: RequestHandler = validate({ params: paramsSchema });
 
 export const getAllPartyServ = async (req: Request, res: Response) => {
+
+    const partyRepo = new PartyRepository();
 
     if (req.headers.personRole !== 'organizador') {
         return res.status(StatusCodes.FORBIDDEN).json({
@@ -19,7 +22,7 @@ export const getAllPartyServ = async (req: Request, res: Response) => {
 
     // const verifyOwnr = await getOrganizer(req.validatedParams.id)
 
-    const verifyOwnr = await getPartyById(req.validatedParams.id)
+    const verifyOwnr = await partyRepo.findById(req.validatedParams.id)
 
     if (verifyOwnr instanceof Error) {
 
