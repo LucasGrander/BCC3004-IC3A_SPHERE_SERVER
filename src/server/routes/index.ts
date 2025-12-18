@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
-import { ContractController, PartyController, PersonController, ServiceController } from "../controllers";
+import { ContractController, NotificationController, PartyController, PersonController, ServiceController } from "../controllers";
 import { ensureAuthenticated } from "../shared/middleware";
 
 
@@ -33,11 +33,19 @@ router.delete('/service/:id', ensureAuthenticated, ServiceController.deleteByIdV
 
 // CONTRACT ENDPOINTS
 
+router.post('/contract/cancel/:id', ensureAuthenticated, ContractController.cancelValidator, ContractController.cancelContract);
 router.post('/contract/finish/:id', ensureAuthenticated, ContractController.finishValidator, ContractController.finishContract);
 router.post('/contract', ensureAuthenticated, ContractController.createValidator, ContractController.create);
 router.put('/contract/:id', ensureAuthenticated, ContractController.updateByIdValidator, ContractController.updateById);
 router.get('/party/contracts/:id', ensureAuthenticated, ContractController.getAllValidator, ContractController.getAllPartyServ);
 router.get('/contracts', ensureAuthenticated, ContractController.getAllContract);
+
+
+// NOTIFICATION ENDPOINTS
+
+router.post('/notification/:id', ensureAuthenticated, NotificationController.readByIdValidator, NotificationController.readNotification);
+router.get('/notifications', ensureAuthenticated, NotificationController.getAllNotificationsByFornecerId);
+
 
 // AUTH ENDPOINTS
 

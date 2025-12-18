@@ -18,7 +18,7 @@ export const notification = pgTable("notification", {
     canceledIn: text().notNull()
 
 });
-
+    
 export const bodyUpdateSchema = z.object(notification)
     .pick({
         hasRead: true,

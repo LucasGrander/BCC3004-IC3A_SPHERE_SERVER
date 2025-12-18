@@ -2,8 +2,6 @@ import type { Request, RequestHandler, Response } from "express";
 import { validate } from "../../shared/middleware";
 import { bodyUpdateSchema, getFornecer, paramsSchema, readNotificationById, type UpdatedNotification } from "../../../database/schema/notification";
 import { StatusCodes } from "http-status-codes";
-import { toLowerCase } from "zod";
-
 
 export const readByIdValidator: RequestHandler = validate({ params: paramsSchema, body: bodyUpdateSchema })
 
