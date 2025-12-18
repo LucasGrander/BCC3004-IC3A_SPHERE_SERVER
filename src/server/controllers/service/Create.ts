@@ -14,8 +14,6 @@ export const create = async (req: Request<{}, {}, NewService>, res: Response) =>
                         }
                 });
         }
-
-        console.log(req.headers.personId)
         
         const result = await createService({...req.validatedBody, person_id: Number(req.headers.personId)});
 

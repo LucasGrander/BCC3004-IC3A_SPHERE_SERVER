@@ -3,8 +3,6 @@ import { getAllPersonPartyById, querySchema } from "../../../database/schema/par
 import { StatusCodes } from "http-status-codes";
 import { validate } from "../../shared/middleware/Validation";
 
-
-
 export const getAllValidator: RequestHandler = validate({ query: querySchema });
 
 export const getAll = async (req: Request, res: Response) => {
