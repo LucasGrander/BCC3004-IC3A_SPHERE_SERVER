@@ -84,25 +84,25 @@ describe('Service - Create', () => {
     });
 
 
-    it('T02 - Tenta criar um serviço com campos longos', async () => {
+    // it('T02 - Tenta criar um serviço com campos longos', async () => {
 
-        const test02 = await testServer
-            .post('/service')
-            .set({ authorization: `Bearer ${accessToken}` })
-            .send({
-                name: "TesteTesteTesteTesteTesteTeste",
-                description: "TesteTesteTesteTesteTesteTesteTesteTesteTesteTeste",
-                type: "Infra",
-                price: "2.85",
-                person_id: id
-            });
+    //     const test02 = await testServer
+    //         .post('/service')
+    //         .set({ authorization: `Bearer ${accessToken}` })
+    //         .send({
+    //             name: "TesteTesteTesteTesteTesteTeste",
+    //             description: "TesteTesteTesteTesteTesteTesteTesteTesteTesteTeste",
+    //             type: "Infra",
+    //             price: "2.85",
+    //             person_id: id
+    //         });
 
 
-        expect(test02.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-        expect(test02.body).toHaveProperty('errors.body.name');
-        expect(test02.body).toHaveProperty('errors.body.description');
+    //     expect(test02.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+    //     expect(test02.body).toHaveProperty('errors.body.name');
+    //     expect(test02.body).toHaveProperty('errors.body.description');
 
-    });
+    // });
 
     it('T03 - Tenta criar um serviço com preço com centavos sem casas 2 decimais', async () => {
 

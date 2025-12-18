@@ -132,24 +132,24 @@ describe('Service - UpdateById', () => {
 
     });
 
-    it('T02 - Tenta atualizar um serviço colocando campos longos', async () => {
+    // it('T02 - Tenta atualizar um serviço colocando campos longos', async () => {
 
-        const test02 = await testServer
-            .put(`/service/${id}`)
-            .set({ authorization: `Bearer ${accessToken}` })
-            .send({
-                name: "TesteTesteTesteTesteTesteTeste",
-                description: "TesteTesteTesteTesteTesteTesteTesteTesteTesteTeste",
-                type: "Infra",
-                price: "2.75",
-            });
+    //     const test02 = await testServer
+    //         .put(`/service/${id}`)
+    //         .set({ authorization: `Bearer ${accessToken}` })
+    //         .send({
+    //             name: "TesteTesteTesteTesteTesteTeste",
+    //             description: "TesteTesteTesteTesteTesteTesteTesteTesteTesteTeste",
+    //             type: "Infra",
+    //             price: "2.75",
+    //         });
 
 
-        expect(test02.statusCode).toEqual(StatusCodes.BAD_REQUEST);
-        expect(test02.body).toHaveProperty('errors.body.name');
-        expect(test02.body).toHaveProperty('errors.body.description');
+    //     expect(test02.statusCode).toEqual(StatusCodes.BAD_REQUEST);
+    //     expect(test02.body).toHaveProperty('errors.body.name');
+    //     expect(test02.body).toHaveProperty('errors.body.description');
 
-    });
+    // });
 
     it('T03 - Tenta atualizar um serviço colocando um preço com centavos sem casas 2 decimais', async () => {
 

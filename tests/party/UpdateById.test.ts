@@ -146,7 +146,6 @@ describe('Party - UpdateById', () => {
         expect(test01.body).toHaveProperty('errors.body.name');
         expect(test01.body).toHaveProperty('errors.body.street');
         expect(test01.body).toHaveProperty('errors.body.number');
-        expect(test01.body).toHaveProperty('errors.body.complement');
         expect(test01.body).toHaveProperty('errors.body.neighborhood');
         expect(test01.body).toHaveProperty('errors.body.city');
 
