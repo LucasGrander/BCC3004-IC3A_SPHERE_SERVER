@@ -1,6 +1,6 @@
 import { boolean, decimal, integer, pgEnum, pgTable, serial, text } from "drizzle-orm/pg-core";
 import { person } from "./person";
-import { and, asc, eq, ilike, relations } from "drizzle-orm";
+import { and, asc, eq, ilike, inArray, relations } from "drizzle-orm";
 import { partyService } from "./partyService";
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
@@ -301,7 +301,7 @@ export const getAServices = async () => {
             .where(eq(service.isDeleted, false))
             .orderBy(asc(service.name))
 
-        if(!result) { 
+        if (!result) {
             return new Error("Erro ao buscar todos os serviços")
         }
 
@@ -364,7 +364,23 @@ export const deleteServiceById = async (id: number): Promise<void | Error> => {
         const cnt = await db.$count(service, eq(service.id, id));
 
         if (cnt === 0) {
-            return new Error('Serviço não encontrado.');
+            return new Error('Serviço não encontrado.', { cause: "SERVICE_NOT_FOUND"});
+        }
+
+        const hasPending = await db
+            .select({ id: partyService.id })
+            .from(partyService)
+            .where(
+                and(
+                    eq(partyService.serviceId, id),
+                    inArray(partyService.status, ["Pendente"])
+                )
+            )
+            .limit(1);
+
+        if (hasPending.length > 0) {
+
+            throw new Error("Este Serviço possui contratos pendentes, Finalize-os antes de deletar o serviço.", { cause: "SERVICE_HAS_PENDING_CONTRACTS" });
         }
 
         const result = await db
@@ -377,7 +393,7 @@ export const deleteServiceById = async (id: number): Promise<void | Error> => {
 
         if (result) return;
 
-        return new Error('Service não encontrada');
+        return new Error('Serviço não encontrado');
 
     } catch (e: any) {
 

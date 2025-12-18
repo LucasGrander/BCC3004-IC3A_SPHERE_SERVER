@@ -1,11 +1,12 @@
 import { boolean, integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 import { person } from "./person";
-import { and, eq, ilike, or, relations } from "drizzle-orm";
+import { and, eq, ilike, inArray, One, relations } from "drizzle-orm";
 import { pgEnum } from "drizzle-orm/pg-core";
 import { partyService } from "./partyService";
 import { createInsertSchema, createSelectSchema, createUpdateSchema } from "drizzle-zod";
 import z from "zod";
 import { db } from "..";
+import { service } from "./service";
 
 export const partyTypes = [
     "Pool Party",
@@ -184,27 +185,27 @@ export const createParty = async (newParty: NewParty): Promise<SelectParty | Err
 
         const createdParty = result[0]
 
-        if (!createdParty) { 
+        if (!createdParty) {
             return new Error('Erro ao inserir registro no banco');
         }
 
         return createdParty;
-        
+
     } catch (e: any) {
 
         const code = e.code || e.cause?.code;
 
         console.log("Erro no createParty:", e);
 
-        if (code === '23505'){
+        if (code === '23505') {
             return new Error('Ja existe uma festa com esse id.');
         }
 
-        if (code === '23503'){
+        if (code === '23503') {
             return new Error('Pessoa nao encontrada.');
         }
 
-        if (e instanceof Error){ 
+        if (e instanceof Error) {
             return e;
         }
 
@@ -242,19 +243,19 @@ export const updatePartyById = async (id: number, updatedParty: UpdateParty): Pr
 
         const updtedParty = result[0]
 
-        if (!updtedParty) { 
+        if (!updtedParty) {
             return new Error('Festa não encontrada');
         }
 
         return updtedParty;
-        
+
     } catch (e: any) {
 
         console.log("Erro no updatePartyById:", e);
 
-//        const code = e.code || e.cause?.code;
+        //        const code = e.code || e.cause?.code;
 
-        if (e instanceof Error){ 
+        if (e instanceof Error) {
             return e;
         }
 
@@ -274,7 +275,7 @@ export const getAllPersonPartyById = async (id: number, page: number, limit: num
 
         if (cnt === 0) {
             return new Error('Organizador não encontrado.');
-         }
+        }
 
         const result = await db
             .select()
@@ -285,24 +286,24 @@ export const getAllPersonPartyById = async (id: number, page: number, limit: num
                     eq(party.person_id, id),
                     filter ? ilike(party.name, `%${filter}%`) : undefined,
                     // or()
-                )        
+                )
             )
             .limit(limit)
             .offset(offset);
 
-        if (!result) { 
+        if (!result) {
             return new Error('Erro ao buscar registro no banco');
         }
 
         return result;
-        
+
     } catch (e: any) {
 
         console.log("Erro no getAllPersonPartyById:", e);
 
-      //  const code = e.code || e.cause?.code;
+        //  const code = e.code || e.cause?.code;
 
-        if (e instanceof Error){ 
+        if (e instanceof Error) {
             return e;
         }
 
@@ -337,19 +338,19 @@ export const getPartyById = async (id: number): Promise<SelectParty | Error> => 
 
         const foundParty = result[0];
 
-        if (!foundParty) { 
+        if (!foundParty) {
             return new Error('Festa não encontrada');
         }
 
         return foundParty;
-        
+
     } catch (e: any) {
 
         console.log("Erro no getPartyById:", e);
 
-     //   const code = e.code || e.cause?.code;
+        //   const code = e.code || e.cause?.code;
 
-        if (e instanceof Error){ 
+        if (e instanceof Error) {
             return e;
         }
 
@@ -367,8 +368,24 @@ export const deletePartyById = async (id: number): Promise<void | Error> => {
         const cnt = await db.$count(party, eq(party.id, id));
 
         if (cnt === 0) {
-             return new Error('Festa não encontrada.');
+            return new Error('Festa não encontrada.', { cause: "PARTY_NOT_FOUND" });
         }
+
+        const hasPending = await db
+            .select({ id: partyService.id })
+            .from(partyService)
+            .where(
+                and(
+                    eq(partyService.partyId, id),
+                    inArray(partyService.status, ["Pendente"])
+                )
+            )
+            .limit(1);
+
+        if (hasPending.length > 0) {
+            throw new Error("Esta Festa possui serviços pendentes, Cancele-os antes de deletar a festa.", { cause: "PARTY_HAS_PENDING_CONTRACTS" });
+        }
+
 
         const result = await db
             .update(party)
@@ -377,22 +394,22 @@ export const deletePartyById = async (id: number): Promise<void | Error> => {
             .returning({
                 deletedId: party.id
             });
-            
+
         if (result) return;
 
         return new Error('Festa não encontrada');
 
     } catch (e: any) {
 
-        console.log('Erro no deletePartyById: ',e);
+        console.log('Erro no deletePartyById: ', e);
 
-      //  const code = e.code || e.cause?.code
+        //  const code = e.code || e.cause?.code
 
-      if(e instanceof Error){
-        return e;
-      }
+        if (e instanceof Error) {
+            return e;
+        }
 
-        return new Error('Erro ao deletar a festa');
+        return new Error('Erro desconhecido ao deletar a festa', { cause: "PARTY_NOT_FOUND" });
     }
 
 }
@@ -404,7 +421,7 @@ export const deleteHPartyById = async (id: number): Promise<void | Error> => {
         const cnt = await db.$count(party, eq(party.id, id));
 
         if (cnt === 0) {
-             return new Error('Festa não encontrada.');
+            return new Error('Festa não encontrada.');
         }
 
         const result = await db
@@ -413,20 +430,20 @@ export const deleteHPartyById = async (id: number): Promise<void | Error> => {
             .returning({
                 deletedId: party.id
             });
-            
+
         if (result) return;
 
         return new Error('Festa não encontrada');
 
     } catch (e: any) {
 
-        console.log('Erro no deletePartyById: ',e);
+        console.log('Erro no deletePartyById: ', e);
 
-      //  const code = e.code || e.cause?.code
+        //  const code = e.code || e.cause?.code
 
-      if(e instanceof Error){
-        return e;
-      }
+        if (e instanceof Error) {
+            return e;
+        }
 
         return new Error('Erro ao deletar a festa');
     }
