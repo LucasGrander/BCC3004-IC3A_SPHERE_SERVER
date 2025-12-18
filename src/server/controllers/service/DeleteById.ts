@@ -23,7 +23,7 @@ export const deleteById = async (req: Request, res: Response) => {
                 default: verifyOwnr.message
             }
         });
-    }else if (req.headers.personId !== verifyOwnr.person_id.toString()) {
+    } else if (req.headers.personId !== verifyOwnr.person_id.toString()) {
         return res.status(StatusCodes.FORBIDDEN).json({
             errors: {
                 default: "Você só pode deletar seus serviços."
@@ -35,6 +35,15 @@ export const deleteById = async (req: Request, res: Response) => {
     const result = await deleteServiceById(req.validatedParams.id);
 
     if (result instanceof Error) {
+
+        if (result.cause === "SERVICE_HAS_PENDING_CONTRACTS") {
+            return res.status(StatusCodes.NOT_ACCEPTABLE).json({
+                errors: {
+                    default: result.message
+                }
+            });
+        }
+
         return res.status(StatusCodes.NOT_FOUND).json({
             errors: {
                 default: result.message
