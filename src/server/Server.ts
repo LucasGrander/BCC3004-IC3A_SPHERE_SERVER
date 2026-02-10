@@ -6,13 +6,16 @@ import bodyParser from 'body-parser';
 import { router } from './routes';
 import "../observers/InAppNotificationObserver";
 
-// import cors from 'cors';
-// import cookieParser from 'cookie-parser';
-
 const app = Express();
 
-// app.use(cors({ credentials: true }));
-// app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 app.use(cors());
 app.use(compression());
